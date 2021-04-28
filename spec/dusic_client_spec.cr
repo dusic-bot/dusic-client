@@ -2,8 +2,4 @@ require "./spec_helper"
 
 describe DusicClient do
   # TODO: Write tests
-
-  it "works" do
-    false.should eq(true)
-  end
 end

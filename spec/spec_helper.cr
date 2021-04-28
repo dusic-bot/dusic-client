@@ -1,2 +1,2 @@
 require "spec"
-require "../src/dusic-client"
+require "../src/dusic_client"
