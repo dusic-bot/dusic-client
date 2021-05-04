@@ -1,5 +1,13 @@
-/docs/
-/lib/
-/bin/
+# Ignore automatically generated documentation
+/docs/*
+
+# Ignore folder with dependencies
+/lib/*
+
+# Ignore compiled binaries
+/bin/*
+!/bin/.keep
+
+# Ignore crystal utilities
 /.shards/
 *.dwarf
