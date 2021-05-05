@@ -10,4 +10,5 @@ spec:
 	crystal spec
 
 dusic-client:
+	shards install
 	shards build dusic-client --no-debug --release --production
