@@ -19,6 +19,6 @@ jobs:
     - name: Install dependencies
       run: shards install
     - name: Run format check
-      run: crystal tool format --check
+      run: make format
     - name: Run tests
-      run: crystal spec
+      run: make spec
