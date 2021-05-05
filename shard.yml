@@ -1,0 +1,18 @@
+name: dusic_client
+version: 6.0.0
+
+development_dependencies:
+  spectator:
+    gitlab: arctic-fox/spectator
+    version: ~> 0.9.36
+
+authors:
+  - Vladislav Kuznecov <fizvlad@mail.ru>
+
+targets:
+  dusic-client:
+    main: src/dusic_client.cr
+
+crystal: 1.0.0
+
+license: MIT
