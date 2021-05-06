@@ -26,6 +26,8 @@ puts <<-TEXT
   >     Shard id: #{shard_id}
   >    Shard num: #{shard_num}
   Use Ctrl-C to stop
+
+
   TEXT
 
 # Save PID
