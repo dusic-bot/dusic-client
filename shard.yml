@@ -12,6 +12,8 @@ authors:
 targets:
   dusic-client:
     main: src/dusic_client.cr
+  secrets:
+    main: src/cli/secrets.cr
 
 crystal: 1.0.0
 

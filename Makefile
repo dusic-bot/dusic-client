@@ -9,6 +9,11 @@ format:
 spec:
 	crystal spec
 
-dusic-client:
+shards:
 	shards install
+
+secrets: shards
+	shards build secrets --no-debug --release --production
+
+dusic-client: shards
 	shards build dusic-client --no-debug --release --production

@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Load secrets key
+      run: echo '${{ secrets.TEST_SECRETS_KEY }}' > config/secrets/test.key
     - name: Install dependencies
       run: shards install
     - name: Run format check

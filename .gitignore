@@ -11,3 +11,6 @@
 # Ignore crystal utilities
 /.shards/
 *.dwarf
+
+# Ignore secrets keys
+/config/secrets/*.key
