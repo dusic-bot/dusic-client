@@ -1,7 +1,12 @@
 require "openssl"
 require "base64"
+require "yaml"
 
 module Secrets
+  def self.read_yaml(environment : String) : YAML::Any
+    YAML.parse Secrets.read(environment)
+  end
+
   def self.read(environment : String) : String
     path = Secrets.data_path(environment)
     if File.exists?(path)
