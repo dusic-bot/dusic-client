@@ -10,6 +10,7 @@ module DusicClient
     @@env ||= case ENV.fetch("ENV", "development").downcase
               when "test"               then Environment::Test
               when "dev", "development" then Environment::Development
+              when "staging", "canary"  then Environment::Canary
               when "production"         then Environment::Production
               else                           Environment::Development
               end
