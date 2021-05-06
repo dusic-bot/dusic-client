@@ -1,4 +1,22 @@
+require "openssl"
+
 module Secrets
+  def self.read(environment : String) : String
+    path = Secrets.data_path(environment)
+    if File.exists?(path)
+      encrypted = File.read(path)
+      Secrets.decrypt_data(encrypted, environment)
+    else
+      ""
+    end
+  end
+
+  def self.write(data : String, environment : String) : Nil
+    path = Secrets.data_path(environment)
+    encrypted = Secrets.encrypt_data(data, environment)
+    File.write(path, encrypted)
+  end
+
   protected def self.encrypt_data(data : String, environment : String) : String
     cipher = Secrets.new_cipher
     cipher.encrypt
@@ -16,7 +34,7 @@ module Secrets
   end
 
   protected def self.key(environment : String) : String
-    path = "config/secrets/#{environment}.key"
+    path = key_path(environment)
     if File.exists?(path)
       File.read(path)
     else
@@ -29,5 +47,13 @@ module Secrets
 
   protected def self.new_cipher : OpenSSL::Cipher
     OpenSSL::Cipher.new("aes-256-cbc")
+  end
+
+  protected def self.data_path(environment : String) : String
+    "config/secrets/#{environment}.yml.enc"
+  end
+
+  protected def self.key_path(environment : String) : String
+    "config/secrets/#{environment}.key"
   end
 end
