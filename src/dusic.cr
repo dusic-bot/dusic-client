@@ -11,28 +11,35 @@ module Dusic
     Production
   end
 
-  @@env : Environment?
-  @@secrets : YAML::Any?
+  @@env : Environment = Dusic.get_env
+  @@secrets : YAML::Any = Dusic.get_secrets
 
-  def self.env : Environment
-    @@env ||= case ENV.fetch("ENV", "development").downcase
-              when "test"               then Environment::Test
-              when "dev", "development" then Environment::Development
-              when "staging", "canary"  then Environment::Canary
-              when "production"         then Environment::Production
-              else                           Environment::Development
-              end
+  def self.env
+    @@env
   end
 
-  def self.secrets : YAML::Any
-    return @@secrets if @@secrets
+  def self.secrets
+    @@secrets
+  end
 
-    environment = case Dusic.env
+  protected def self.get_env : Environment
+    case ENV.fetch("ENV", "development").downcase
+    when "test"               then Environment::Test
+    when "dev", "development" then Environment::Development
+    when "staging", "canary"  then Environment::Canary
+    when "production"         then Environment::Production
+    else                           Environment::Development
+    end
+  end
+
+  protected def self.get_secrets : YAML::Any
+    environment = case Dusic.get_env
                   when Environment::Test        then "test"
                   when Environment::Development then "development"
                   when Environment::Canary      then "canary"
                   when Environment::Production  then "production"
+                  else                               "development"
                   end
-    @@secrets = Secrets.read_yaml(environment)
+    Secrets.read_yaml(environment)
   end
 end
