@@ -1,4 +1,5 @@
 require "openssl"
+require "base64"
 
 module Secrets
   def self.read(environment : String) : String
@@ -22,7 +23,8 @@ module Secrets
     cipher.encrypt
     cipher.key = Secrets.key(environment)
 
-    String.new(cipher.update(data)) + String.new(cipher.final)
+    encrypted = String.new(cipher.update(data)) + String.new(cipher.final)
+    Base64.strict_encode(encrypted)
   end
 
   protected def self.decrypt_data(data : String, environment : String) : String
@@ -30,7 +32,8 @@ module Secrets
     decipher.decrypt
     decipher.key = Secrets.key(environment)
 
-    String.new(decipher.update(data)) + String.new(decipher.final)
+    plain = Base64.decode_string(data)
+    String.new(decipher.update(plain)) + String.new(decipher.final)
   end
 
   protected def self.key(environment : String) : String
