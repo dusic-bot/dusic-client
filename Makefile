@@ -15,5 +15,5 @@ shards:
 secrets: shards
 	shards build secrets --no-debug --release --production
 
-dusic-client: shards
-	shards build dusic-client --no-debug --release --production
+worker: shards
+	shards build worker --no-debug --release --production
