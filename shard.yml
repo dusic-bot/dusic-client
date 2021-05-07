@@ -6,6 +6,11 @@ development_dependencies:
     gitlab: arctic-fox/spectator
     version: ~> 0.9.36
 
+dependencies:
+  i18n:
+    github: fizvlad/i18n.cr
+    branch: feat/crystal-v1-support
+
 authors:
   - Vladislav Kuznecov <fizvlad@mail.ru>
 
