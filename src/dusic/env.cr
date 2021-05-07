@@ -8,11 +8,11 @@ module Dusic::Env
     Production
   end
 
-  @@env : Environment = Dusic.get_env
+  @@env : Environment? = nil
 
   # Return environment
   def env : Environment
-    @@env
+    @@env ||= get_env
   end
 
   protected def get_env : Environment
