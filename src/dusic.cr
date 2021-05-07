@@ -1,4 +1,9 @@
+require "log"
+
 require "./secrets"
+
+# Log setup
+Log.setup(Dusic.env == Dusic::Environment::Production ? Log::Severity::Info : Log::Severity::Debug)
 
 # Shared features
 module Dusic

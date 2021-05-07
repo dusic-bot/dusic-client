@@ -1,5 +1,3 @@
-require "log"
-
 require "./dusic"
 
 class Worker
@@ -15,6 +13,7 @@ class Worker
     Log.info { "worker #{@shard_id}_#{@shard_num} running..." }
 
     while @is_running
+      Log.debug { "Tick" }
       sleep 5.seconds # TODO: Do actual things lol
     end
   end
