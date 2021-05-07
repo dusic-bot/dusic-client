@@ -16,4 +16,32 @@ Spectator.describe Dusic do
       expect(subject["answer"]).to eq(42)
     end
   end
+
+  describe ".await" do
+    let(timeout) { 2.seconds }
+
+    context "when block returns truthy value" do
+      it do
+        value : Int32? = nil
+        spawn do
+          sleep 1.second
+          value = 42
+        end
+        result = described_class.await(timeout) { value }
+        expect(result).to be_truthy
+      end
+    end
+
+    context "when timeout hit" do
+      it do
+        value : Int32? = nil
+        spawn do
+          sleep 4.seconds
+          value = 42
+        end
+        result = described_class.await(timeout) { value }
+        expect(result).to be_falsey
+      end
+    end
+  end
 end
