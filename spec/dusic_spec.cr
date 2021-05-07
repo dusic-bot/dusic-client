@@ -12,8 +12,8 @@ Spectator.describe Dusic do
 
     it do
       is_expected.to be_a(YAML::Any)
-      expect(subject["test"]).to be_true
-      expect(subject["answer"]).to eq(42)
+      expect(subject["default_prefix"]).to eq("!")
+      expect(subject["bot_id"]).to eq(0)
     end
   end
 
