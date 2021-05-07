@@ -1,26 +1,23 @@
-require "./dusic/setup"
+# Setup shards
+require "log"
+Log.setup(Dusic.env == Dusic::Environment::Production ? Log::Severity::Info : Log::Severity::Debug)
 
-require "./dusic/environment"
+require "i18n"
+I18n.load_path += ["config/locales/**/"]
+I18n.init
+I18n.default_locale = "ru"
+
+# Dusic module extensions
+require "./dusic/env"
 require "./dusic/secrets"
+require "./dusic/misc"
 
+# Dusic module itself
 module Dusic
   VERSION = "6.0.0"
 
-  # Loops and calls provided block. Stops when timeout is hit (result will be `false`) or block
-  # returns truthy value (result will be `true`)
-  def self.await(timeout : Time::Span = 10.seconds, interval : Time::Span = 250.milliseconds, &block) : Bool
-    time_waited = Time::Span.zero
-    while time_waited < timeout
-      sleep interval
-      time_waited += interval
-      return true if yield
-    end
-    false
-  end
-
-  # Wrapper around default `spawn` method
-  # TODO: Currently it seems to have no use. Consider deleting
-  def self.spawn(name : String? = nil, same_thread : Bool = false, &block)
-    ::spawn(name: name, same_thread: same_thread, &block)
-  end
+  extend self
+  include Dusic::Env
+  include Dusic::Secrets
+  include Dusic::Misc
 end

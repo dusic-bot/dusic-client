@@ -1,19 +1,21 @@
-enum Dusic::Environment
-  Test
-  Development
-  Canary
-  Production
-end
+module Dusic::Env
+  extend self
 
-module Dusic
+  enum Environment
+    Test
+    Development
+    Canary
+    Production
+  end
+
   @@env : Environment = Dusic.get_env
 
   # Return environment
-  def self.env : Environment
+  def env : Environment
     @@env
   end
 
-  protected def self.get_env : Environment
+  protected def get_env : Environment
     case ENV.fetch("ENV", "development").downcase
     when "test"               then Environment::Test
     when "dev", "development" then Environment::Development
