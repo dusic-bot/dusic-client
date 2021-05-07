@@ -1,0 +1,37 @@
+commands:
+  settings:
+    title: Настройки
+    text:
+      all_settings: |-
+        Текущие настройки сервера:
+
+        - DJ-роль (`dj_role`): **%{dj_role}**
+        - Язык (`language`): **%{language}**
+        - Автопауза (`autopause`): **%{autopause}**
+        - Префикс (`prefix`): **%{prefix}**
+      dj_role_reset: DJ-роль удалена
+      not_defined: Не определена
+      new_dj_role: |-
+        Установлена новая DJ-роль: **%{dj_role}**
+      new_dj_role_id: |-
+        Установлена новая DJ-роль с ID: **%{dj_role_id}**
+      new_language: |-
+        Установлен язык: **%{language}**
+      new_autopause: |-
+        Автопауза: **%{autopause}**
+      using_default_prefix: |-
+        Установлен стандартный префикс
+      new_prefix: |-
+        Установлен новый префикс: **%{prefix}**
+
+        Бот всегда отзывается на сообщения с упоминанием
+        Чтобы восстановить стандартный префикс, вызовите `@Dusic settings prefix`
+    errors:
+      only_available_in_guild_channels:
+        Редактирование настроек доступно только на серверах
+      unknown_setting:
+        Неизвестная настройка `%{setting}`
+      failed_to_find_role:
+        Не удалось определить роль
+      only_available_for_administrators:
+        Изменение настроек доступно только администраторам сервера

@@ -1,0 +1,4 @@
+commands:
+  unknown:
+    title: Unknown command
+    text: Unknown command `%{name}`

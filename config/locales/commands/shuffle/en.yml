@@ -1,0 +1,10 @@
+commands:
+  shuffle:
+    title: Audio Player
+    text:
+      queue_shuffled: Queue shuffled
+    errors:
+      only_available_in_guild_channels: |-
+        Audio queue is only available in guilds
+      only_available_for_dj: |-
+        This command can only be executed by server DJs

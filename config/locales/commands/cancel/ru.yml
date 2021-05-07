@@ -1,0 +1,8 @@
+commands:
+  cancel:
+    title: Аудио-плеер
+    text:
+      selection_canceled: Выбор аудио отменён
+    errors:
+      only_available_in_guild_channels: Проигрывание музыки доступно только на серверах
+      call_play_first: Вызовите команду `play ТЕКСТ ДЛЯ ПОИСКА` ,чтобы инициировать поиск

@@ -1,0 +1,15 @@
+commands:
+  server:
+    title: Server
+    text:
+      statistic: |-
+        **Lately (`%{today}`):**
+          Length of loaded tracks: `%{daily_tracks_length}`
+          Amount of tracks: `%{daily_tracks_amount}`
+
+        **Overall:**
+          Length of loaded tracks: `%{total_tracks_length}`
+          Amount of tracks: `%{total_tracks_amount}`
+    errors:
+      only_available_in_guild_channels: |-
+        Statistic is only available on the servers

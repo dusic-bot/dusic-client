@@ -1,0 +1,184 @@
+commands:
+  help:
+    title: Commands
+    section_title:
+      _question_mark: "⠀"      # Empty sign
+      _musical_sign: "⠀"       # Empty sign
+      _musical_line_sign: "⠀"  # Empty sign
+      _gear: "⠀"               # Empty sign
+      about: |-
+        `about`
+      cancel: |-
+        `cancel`
+      choose: |-
+        `choose` or `ch`
+      donate: |-
+        `donate` or `premium`
+      help: |-
+        `help` or `h`
+      leave: |-
+        `leave`
+      play: |-
+        `play` or `p`
+      queue: |-
+        `queue` or `q`
+      remove: |-
+        `remove`
+      repeat: |-
+        `repeat`
+      server: |-
+        `server`
+      settings: |-
+        `settings` or `options`
+      shuffle: |-
+        `shuffle`
+      skip: |-
+        `skip` or `s`
+      stop: |-
+        `stop`
+    text:
+      section:
+        _question_mark: >-
+          ❓
+        _musical_sign: >-
+          🎵
+        _musical_line_sign: >-
+          🎼
+        _gear: >-
+          ⚙️
+        about: >-
+          General information about bot and developer contacts
+        cancel: >-
+          Cancel audio choosing. Only called after `play SEARCH QUEUE`
+        choose: >-
+          Choose audio from search results. Only called after `play SEARCH QUEUE`
+        donate: >-
+          Information about premium access
+        help: >-
+          List of available commands. Specify command name as an argument to
+          see detailed info about it
+        leave: >-
+          Suspend playback without cleaning the queue
+        play: >-
+          Add track to queue and start playback. Read more: `help play`
+        queue: >-
+          Display audio queue
+        remove: >-
+          Remove one of several tracks from queue
+        repeat: >-
+          Add current track into beginning of queue
+        server: >-
+          Display server statistic
+        settings: >-
+          Change bot settings for current server. Read more: `help settings`
+        shuffle: >-
+          Shuffle audio queue
+        skip: >-
+          Skip one or several tracks
+        stop: >-
+          Stop playback and clean audio queue
+      detailed:
+        about: |-
+          General information about bot and developer contacts
+        cancel: |-
+          Cancel audio choosing. Only called after `play SEARCH QUEUE`
+        choose: |-
+          Choose audio from search results. Only called after `play SEARCH QUEUE`
+        donate: |-
+          Information about premium access
+        help: |-
+          List of available commands
+          Specify command name as an argument to see detailed info about it
+          **Usage examples:**
+          ```
+          help play
+          help queue
+          ```
+        leave: |-
+          Suspend playback without cleaning the queue
+          Call `play` to resume playback
+        play: |-
+          Add track to queue and start playback. If argument is not specified, playback will be resumed
+
+          You can specify link to post, user page, group page or playlist as an argument
+          If argument is not a link, audio search will be initiated
+
+          **Settings:**
+          `first` - add audios to beginning of queue
+          `shuffle` - shuffle found audios
+          `instant` - automatically choose first audio from search
+          `skip` - skip current track after adding
+          `now` - same as `first` + `instant` + `skip`
+
+
+          **Usage examples:**
+          ```
+          play The doors
+          play https://vk.com/wall-72589944_3263
+          play vk.com/mashup
+          play
+          play --first https://vk.com/music/album/121570739_7
+          play --now Brut
+          ```
+        queue: |-
+          Specify position in queue, to display audios from this position
+
+          **Usage examples:**
+          `queue 10` - tracks, starting from 10th position
+        remove: |-
+          Specify position in queue to delete track at this position
+          To remove range of audios, simply pass it as an argument
+          Call of `remove queue` will clear the queue
+
+          **Usage examples:**
+          ```
+          remove 13
+          remove 4-12
+          remove queue
+          ```
+        repeat: |-
+          Add current track into beginning of queue
+        server: |-
+          Display server statistic
+        settings: |-
+          To change bot settings, call command `settings OPTION VALUE`
+
+          **DJ role (`dj_role`)**
+          If DJ role is specified, playback commands will only be available to users with this role, otherwise - to everyone
+          You can specify role ID, role name or role mention as an argument
+          If argument is empty, DJ-role will be removed
+          ```
+          settings dj_role @DJ
+          settings dj_role
+          ```
+
+          **Language (`language`)**
+          Supported languages: `en`, `ru`
+          ```
+          settings language en
+          ```
+
+          **Autopause (`autopause`)**
+          Automatically suspend playback when there are no listeners in channel
+          ```
+          settings autopause off
+          settings autopause on
+          ```
+
+          **Prefix (`prefix`)**
+          Change bot prefix
+          ```
+          settings prefix !
+          settings prefix PogChamp
+          settings prefix
+          ```
+        shuffle: |-
+          Shuffle audio queue
+        skip: |-
+          Specify position in queue to move playback to it
+
+          **Usage examples:**
+          `skip` - skip current track
+          `skip 10` - move to 10th audio
+        stop: |-
+          Stop playback and clean audio queue

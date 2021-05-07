@@ -1,9 +1,15 @@
 require "log"
+require "i18n"
 
 require "./secrets"
 
 # Log setup
 Log.setup(Dusic.env == Dusic::Environment::Production ? Log::Severity::Info : Log::Severity::Debug)
+
+# I18n setup
+I18n.load_path += ["config/locales/**/"]
+I18n.init
+I18n.default_locale = "ru"
 
 # Shared features
 module Dusic

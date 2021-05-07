@@ -1,0 +1,17 @@
+commands:
+  remove:
+    title: Аудио-плеер
+    text:
+      audio_queue_is_empty: Очередь пуста
+      removed_audios:
+        one: Удалена `%{count}` аудиозапись
+        few: Удалены `%{count}` аудиозаписи
+        many: Удалены `%{count}` аудиозаписей
+        other: Удалены `%{count}` аудиозаписей
+    errors:
+      only_available_in_guild_channels: |-
+        Редактирование очереди доступно только на серверах
+      incorrect_arguments: |-
+        Проверьте правильность аргументов. Подробнее: `help remove`
+      only_available_for_dj: |-
+        Данная команда доступна только пользователям с DJ-ролью

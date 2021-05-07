@@ -1,0 +1,10 @@
+commands:
+  error:
+    title: Error :0
+    text:
+      unknown_error: |-
+        Unknown exception was raised during execution of this command
+        It is already logged and will be resolved as soon as possible
+
+        You can speed up this process by describing how and when this problem have happened. Thank you!
+        Contacts: `%{prefix}about`

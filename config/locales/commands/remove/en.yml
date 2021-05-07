@@ -1,0 +1,15 @@
+commands:
+  remove:
+    title: Audio Player
+    text:
+      audio_queue_is_empty: Audio queue is empty
+      removed_audios:
+        one: Removed %{count} audio
+        other: Removed %{count} audios
+    errors:
+      only_available_in_guild_channels: |-
+        Audio queue is only available in guilds
+      incorrect_arguments: |-
+        Check whether arguments are correct. Read more: `help remove`
+      only_available_for_dj: |-
+        This command can only be executed by server DJs

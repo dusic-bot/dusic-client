@@ -1,0 +1,18 @@
+commands:
+  play:
+    title: Аудио-плеер
+    text:
+      asset_added: Запись `%{name}` добавлена в очередь
+      nothing_found: Ничего не найдено :(
+      find_line: |-
+        `%{index}`. **%{artist}** - **%{title}** `%{duration}`
+      find_footer: |-
+        Вызовите команду `choose НОМЕР АУДИО` для выбора аудиозаписей из списка
+        Например, `choose 2` или `choose 1, 2, 3`
+    errors:
+      asset_not_found: Запись `%{name}` не найдена
+      only_available_in_guild_channels: Проигрывание музыки доступно только на серверах
+      you_are_not_in_vc: |-
+        Для начала проигрывания, подключитесь к голосовому каналу и вызовите команду `play`
+      yt_unavailable: Музыка Youtube временно недоступна
+      vk_unavailable: Музыка VK временно недоступна

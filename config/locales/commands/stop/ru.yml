@@ -1,0 +1,10 @@
+commands:
+  stop:
+    title: Аудио-плеер
+    text:
+      playback_fully_stopped: Проигрывание полностью остановлено
+    errors:
+      only_available_in_guild_channels: |-
+        Проигрывание музыки и просмотр очереди доступны только на серверах
+      only_available_for_dj: |-
+        Данная команда доступна только пользователям с DJ-ролью

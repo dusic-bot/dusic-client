@@ -1,0 +1,18 @@
+commands:
+  play:
+    title: Audio Player
+    text:
+      asset_added: Audio `%{name}` added to queue
+      nothing_found: Nothing found :(
+      find_line: |-
+        `%{index}`. **%{artist}** - **%{title}** `%{duration}`
+      find_footer: |-
+        Call `choose AUDIO NUMBER` to choose audios from list
+        For instance, `choose 2` or `choose 1, 2, 3`
+    errors:
+      asset_not_found: Audio `%{name}` not found
+      only_available_in_guild_channels: Playback is only available in guilds
+      you_are_not_in_vc: |-
+        To start playback, connect to voice channel and call `play` command
+      yt_unavailable: Youtube music is temporary unavailable
+      vk_unavailable: VK music is temporary unavailable

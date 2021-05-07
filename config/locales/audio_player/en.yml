@@ -1,0 +1,40 @@
+audio_player:
+  title: Audio Player
+  text:
+    loading: Loading **%{artist}** - **%{title}** `%{duration}`
+    failed_to_load: Failed to load **%{artist}** - **%{title}** `%{duration}`
+    playing: Playing **%{artist}** - **%{title}** `%{duration}`
+    autopause_warning: >-
+      Playback was paused since there are no listeners in the channel. Connect
+      to voice channel and call `play` command to resume playback
+    time_limit_warning: >-
+      Currently playback time is limited to 30 minutes per day. This restriction
+      is not applied to servers with registered donations
+
+      Call `donate` command for more information
+
+      Thank you for your support!
+    queue_is_empty: |-
+      Queue is empty. Use `play` command to add audios. Read more: `help play`
+    audio_added: Added **%{artist}** - **%{title}** `%{duration}` to queue
+    audio_list_added:
+      one: Added **%{title}** (`%{count}` audio) to queue
+      other: Added **%{title}** (`%{count}` audios) to queue
+    audios_added:
+      one: Added `%{count}` audio to queue
+      other: Added `%{count}` audios to queue
+    nothing_found: Nothing found :(
+    audio_queue_full: Audio queue is full. Call `remove queue` command to clean it
+    queue_limit_hit: >-
+      Some audios were not added to queue. Call `remove queue` to clean audio queue
+    time_limit_title: Listen time limit
+    time_limit_description: >-
+      Currently playback time is limited to 30 minutes per day. This restriction
+      is not applied to servers with registered donations
+
+      Call `donate` command for more information
+  errors:
+    you_are_not_in_vc: |-
+      To start playback, connect to voice channel and call `play` command
+    could_not_connect: |-
+      Bot failed to connect to voice channel. Please check bot permissions

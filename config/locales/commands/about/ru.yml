@@ -1,0 +1,11 @@
+commands:
+  about:
+    title: Информация о боте
+    text: >-
+      Dusic — музыка из vk.com в Discord
+
+      **Discord сервер:** https://discord.gg/4sUeCmQ
+
+      **Группа ВК:** https://vk.com/dusic_bot
+
+      Dusic v%{version}, Shard #%{shard}
