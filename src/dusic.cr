@@ -19,7 +19,7 @@ module Dusic
   end
 
   # Wrapper around default `spawn` method
-  # NOTE: Currently it seems to have no use consider deleting
+  # TODO: Currently it seems to have no use. Consider deleting
   def self.spawn(name : String? = nil, same_thread : Bool = false, &block)
     ::spawn(name: name, same_thread: same_thread, &block)
   end
