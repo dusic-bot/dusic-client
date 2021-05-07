@@ -44,4 +44,44 @@ Spectator.describe Dusic do
       end
     end
   end
+
+  describe ".alphabet_encode" do
+    subject { described_class.alphabet_encode(argument) }
+
+    let(argument) { 619808296743862300u64 }
+
+    it { is_expected.to eq("WlBIoaqWXoe") }
+
+    context "when zero" do
+      let(argument) { 0u64 }
+
+      it { is_expected.to eq("a") }
+    end
+  end
+
+  describe ".alphabet_decode" do
+    subject(call) { described_class.alphabet_decode(argument) }
+
+    let(argument) { "WlBIoaqWXoe" }
+
+    it { is_expected.to eq(619808296743862300u64) }
+
+    context "when 'a'" do
+      let(argument) { "a" }
+
+      it { is_expected.to eq(0u64) }
+    end
+
+    context "when string contains symbol out of alphabet" do
+      let(argument) { "-b" }
+
+      it "is treated as 'a' char" { is_expected.to eq(52u64) }
+    end
+
+    context "when overflowing" do
+      let(argument) { "ZZZZZZZZZZZZZZZZ" }
+
+      it { expect { call }.to raise_error(OverflowError) }
+    end
+  end
 end

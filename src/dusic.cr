@@ -10,6 +10,7 @@ I18n.default_locale = "ru"
 # Dusic module extensions
 require "./dusic/env"
 require "./dusic/secrets"
+require "./dusic/alphabet_encoding"
 require "./dusic/misc"
 
 # Dusic module itself
@@ -19,5 +20,6 @@ module Dusic
   extend self
   include Dusic::Env
   include Dusic::Secrets
+  include Dusic::AlphabetEncoding
   include Dusic::Misc
 end
