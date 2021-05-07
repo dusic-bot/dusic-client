@@ -23,6 +23,7 @@ puts <<-TEXT
   *  Environment: #{Dusic.env}
   *          PID: #{Process.pid}
 
+  >       Bot id: #{Dusic.secrets["bot_id"]}
   >     Shard id: #{shard_id}
   >    Shard num: #{shard_num}
   Use Ctrl-C to stop
