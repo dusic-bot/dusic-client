@@ -15,17 +15,15 @@ class Worker
     @discord_client = DiscordClient.new(shard_id, shard_num)
   end
 
-  def run
+  def run : Nil
+    Log.info { "starting worker #{@shard_id}_#{@shard_num}" }
     @is_running = true
-    Log.info { "worker #{@shard_id}_#{@shard_num} running..." }
-
     @discord_client.run
   end
 
-  def stop
+  def stop : Nil
+    Log.info { "stopping worker #{@shard_id}_#{@shard_num}" }
     @discord_client.stop
-
-    Log.info { "worker #{@shard_id}_#{@shard_num} stopping..." }
     @is_running = false
   end
 end
