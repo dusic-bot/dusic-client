@@ -10,6 +10,8 @@ dependencies:
   i18n:
     github: fizvlad/i18n.cr
     branch: feat/crystal-v1-support
+  discordcr:
+    github: shardlab/discordcr
 
 authors:
   - Vladislav Kuznecov <fizvlad@mail.ru>
