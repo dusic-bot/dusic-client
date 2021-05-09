@@ -1,0 +1,31 @@
+bot_name: Dusic
+status: "%{prefix}help 🎵 v%{version}, shard #%{shard_id}"
+color:
+  primary: 31743
+  secondary: 7107965
+  success: 2664261
+  danger: 14431557
+  warning: 16761095
+  info: 1548984
+  light: 16316922
+  dark: 3422784
+message:
+  donation: >-
+    Hooray! Your donation on server %{server_name} was successfully registered.
+    Thank you for your support! <3
+  welcome: >-
+    Hooray! Now music from vk.com is available in Discord voice chat
+
+
+    Connect to voice channel, send following command into server text chat
+    `%{prefix}play vk.com/music/album/-2000019940_19940_5e3a0227e99aee045f`
+    and enjoy the music 🚀
+
+
+    You can play your own music by passing link to user or group page as argument:
+    `%{prefix}play https://vk.com/mashup`
+
+
+    List of available commands: `%{prefix}help`
+
+    Additional information on the commands: `%{prefix}help play`

@@ -1,0 +1,4 @@
+commands:
+  unavailable:
+    title: Command unavailable
+    text: Command `%{name}` is unavailable

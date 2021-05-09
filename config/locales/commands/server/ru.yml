@@ -1,0 +1,15 @@
+commands:
+  server:
+    title: Сервер
+    text:
+      statistic: |-
+        **Недавно (`%{today}`):**
+          Продолжительность загруженных треков: `%{daily_tracks_length}`
+          Количество треков: `%{daily_tracks_amount}`
+
+        **За всё время:**
+          Продолжительность загруженных треков: `%{total_tracks_length}`
+          Количество треков: `%{total_tracks_amount}`
+    errors:
+      only_available_in_guild_channels: |-
+        Статистика доступна только на серверах

@@ -1,0 +1,11 @@
+commands:
+  leave:
+    title: Audio Player
+    text:
+      playback_suspended: |-
+        Playback was suspended. Call `play` to resume
+    errors:
+      only_available_in_guild_channels: |-
+        Playback and audio queue are only available in guilds
+      only_available_for_dj: |-
+        This command can only be executed by server DJs

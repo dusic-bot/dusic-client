@@ -1,0 +1,5 @@
+commands:
+  master:
+    title: Мастер
+    text:
+      pong: pong

@@ -1,0 +1,16 @@
+commands:
+  queue:
+    title: Аудио-плеер
+    text:
+      audio_queue_is_empty: Очередь пуста
+      tracks_in_queue:
+        one: В очереди `%{count}` аудиозапись
+        few: В очереди `%{count}` аудиозаписи
+        many: В очереди `%{count}` аудиозаписей
+        other: В очереди `%{count}` аудиозаписей
+      track_list_line: "    `%{position}`.  %{track}"
+    errors:
+      only_available_in_guild_channels: |-
+        Проигрывание музыки и просмотр очереди доступны только на серверах
+      could_not_load_audios: |-
+        Не удалось загрузить аудиозаписи. Проверьте правильность аргументов

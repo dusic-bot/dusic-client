@@ -1,0 +1,4 @@
+commands:
+  unknown:
+    title: Неизвестная команда
+    text: Неизвестная команда `%{name}`

@@ -1,0 +1,8 @@
+commands:
+  cancel:
+    title: Audio Player
+    text:
+      selection_canceled: Audio selection canceled
+    errors:
+      only_available_in_guild_channels: Playback is only available in guilds
+      call_play_first: Call `play SEARCH QUEUE` to initiate audio search

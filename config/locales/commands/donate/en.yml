@@ -1,0 +1,28 @@
+commands:
+  donate:
+    title: Donate
+    text:
+      main: |-
+        **Your donation identificator on current server:** `%{donation_id}`
+
+        **Donation app:** https://vk.com/app6887721_-170493750
+        Automatic handling of donation using identificator can take up to 2 minutes
+
+        Specifying your identificator on this server in donation menu will link donation to your Discord ID and this server ID
+        Please notice that donation can be of any size, that won't affect anything
+
+        Users with recent donations will always receive rays of gratitude from me
+        Servers with recent donations will receive access to following additional features for a month:
+            - Unlimited listen time
+            - Audio queue up to 10000 tracks
+            - Disabling autopause
+
+        **Current server status:**
+        %{donation_status}
+        Last recorded donation: %{last_donation_data}
+      server_got_premium: Server got premium status 💖
+      no_premium: Server got no premium status
+      no_last_donation: nothing 🤔
+    errors:
+      only_available_in_guild_channels: |-
+        This command should be called on the server which will be associated with the donation

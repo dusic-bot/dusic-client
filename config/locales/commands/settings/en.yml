@@ -1,0 +1,37 @@
+commands:
+  settings:
+    title: Settings
+    text:
+      all_settings: |-
+        Current server settings:
+
+        - DJ role (`dj_role`): **%{dj_role}**
+        - Language (`language`): **%{language}**
+        - Autopause (`autopause`): **%{autopause}**
+        - Prefix (`prefix`): **%{prefix}**
+      dj_role_reset: DJ role cleaned
+      not_defined: Not defined
+      new_dj_role: |-
+        New DJ role: **%{dj_role}**
+      new_dj_role_id: |-
+        New DJ role ID: **%{dj_role_id}**
+      new_language: |-
+        Using language: **%{language}**
+      new_autopause: |-
+        Autopause: **%{autopause}**
+      using_default_prefix: |-
+        Using default prefix
+      new_prefix: |-
+        New prefix: **%{prefix}**
+
+        Bot will always respond to mentions
+        To restore default prefix call `@Dusic settings prefix`
+    errors:
+      only_available_in_guild_channels:
+        Bot settings are only available in guilds
+      unknown_setting:
+        Unknown setting `%{setting}`
+      failed_to_find_role:
+        Failed to identify role
+      only_available_for_administrators:
+        Settings can be only changed by server administrators

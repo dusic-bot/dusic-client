@@ -1,0 +1,10 @@
+commands:
+  shuffle:
+    title: Аудио-плеер
+    text:
+      queue_shuffled: Очередь перемешана
+    errors:
+      only_available_in_guild_channels: |-
+        Редактирование очереди доступно только на серверах
+      only_available_for_dj: |-
+        Данная команда доступна только пользователям с DJ-ролью

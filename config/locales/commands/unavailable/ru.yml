@@ -1,0 +1,4 @@
+commands:
+  unavailable:
+    title: Команда недоступна
+    text: Команда `%{name}` недоступна

@@ -1,0 +1,14 @@
+commands:
+  queue:
+    title: Audio Player
+    text:
+      audio_queue_is_empty: Audio queue is empty
+      tracks_in_queue:
+        one: "`%{count}` track in queue"
+        other: "`%{count}` tracks in queue"
+      track_list_line: "    `%{position}`.  %{track}"
+    errors:
+      only_available_in_guild_channels: |-
+        Playback and audio queue are only available in guilds
+      could_not_load_audios: |-
+        Could not load audios. Check whether arguments are correct
