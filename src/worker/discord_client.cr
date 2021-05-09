@@ -14,6 +14,7 @@ class Worker
     @bot_id : UInt64 = Dusic.secrets["bot_id"].as_s.to_u64
     @bot_token : String = Dusic.secrets["bot_token"].as_s
     @default_prefix : String = Dusic.secrets["default_prefix"].as_s
+    @log_channel_id : UInt64 = Dusic.secrets["log_channel_id"].as_s.to_u64
 
     def initialize(@shard_id : Int32, @shard_num : Int32)
       @client = Discord::Client.new(
@@ -25,11 +26,15 @@ class Worker
       @client.cache = Discord::Cache.new(@client)
 
       @client.on_ready { |payload| ready_handler(payload) }
+      @client.on_guild_create { |payload| guild_create_handler(payload) }
+      @client.on_message_create { |message| message_create_handler(message) }
+      @client.on_voice_server_update { |payload| voice_server_update_handler(payload) }
     end
 
     def run : Nil
       Log.info { "starting Discord client" }
       @is_running = true
+      log("Starting at version: `#{Dusic::VERSION}`")
       @client.run
     end
 
@@ -40,13 +45,13 @@ class Worker
     end
 
     def log(message : String) : Nil
-      @discord_client.create_message(@discord_log_channel_id, "`Shard##{@shard_id + 1}/#{@shard_num}`:\n#{message}")
+      @client.create_message(@log_channel_id, "`Shard##{@shard_id + 1}/#{@shard_num}`:\n#{message}")
     rescue
       Log.error { "failed to log message '#{message}' to Discord" }
     end
 
     private def ready_handler(payload : Discord::Gateway::ReadyPayload) : Nil
-      Log.info { "Discord ready" }
+      Log.info { "Ready event" }
 
       Dusic.spawn do
         while @is_running
@@ -54,6 +59,18 @@ class Worker
           sleep STATUS_UPDATE_INTERVAL
         end
       end
+    end
+
+    private def guild_create_handler(payload : Discord::Gateway::GuildCreatePayload) : Nil
+      Log.info { "New server" }
+    end
+
+    private def message_create_handler(message : Discord::Message) : Nil
+      Log.debug { "New message" }
+    end
+
+    private def voice_server_update_handler(payload : Discord::Gateway::VoiceServerUpdatePayload) : Nil
+      Log.debug { "Voice server update" }
     end
 
     private def update_status : Nil
