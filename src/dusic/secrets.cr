@@ -11,13 +11,6 @@ module Dusic::Secrets
   end
 
   protected def get_secrets : YAML::Any
-    environment = case Dusic.env
-                  when Environment::Test        then "test"
-                  when Environment::Development then "development"
-                  when Environment::Canary      then "canary"
-                  when Environment::Production  then "production"
-                  else                               "development"
-                  end
-    ::Secrets.read_yaml(environment)
+    ::Secrets.read_yaml(env_s)
   end
 end

@@ -7,6 +7,12 @@ Spectator.describe Dusic do
     it { is_expected.to eq(Dusic::Environment::Test) }
   end
 
+  describe ".env_s" do
+    subject { described_class.env_s }
+
+    it { is_expected.to eq("test") }
+  end
+
   describe ".secrets" do
     subject { described_class.secrets }
 
