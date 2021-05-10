@@ -18,3 +18,7 @@
 # Ignore temp files
 /tmp/pids/*
 !/tmp/pids/.keep
+
+# Ignore log files
+/log/*
+!/log/.keep
