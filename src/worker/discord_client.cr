@@ -71,6 +71,7 @@ class Worker
       return if message.author.system # Ignore system messages
 
       @worker.message_handler.handle(message.content, dm: message.guild_id.nil?)
+      # TODO
     end
 
     private def voice_server_update_handler(payload : Discord::Gateway::VoiceServerUpdatePayload) : Nil
