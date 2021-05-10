@@ -7,11 +7,7 @@ I18n.load_path += ["config/locales/**/"]
 I18n.init
 I18n.default_locale = "ru"
 
-# Dusic module extensions
-require "./dusic/env"
-require "./dusic/secrets"
-require "./dusic/alphabet_encoding"
-require "./dusic/misc"
+require "./dusic/*"
 
 # Dusic module itself
 module Dusic
