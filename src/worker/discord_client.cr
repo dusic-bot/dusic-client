@@ -3,7 +3,7 @@ require "discordcr"
 class Worker
   # Discord facade
   class DiscordClient
-    Log = Worker::Log.for("discord")
+    Log = Worker::Log.for("discord_client")
 
     INTENTS = Discord::Gateway::Intents::Guilds | Discord::Gateway::Intents::GuildVoiceStates |
               Discord::Gateway::Intents::GuildMessages | Discord::Gateway::Intents::DirectMessages
@@ -16,7 +16,7 @@ class Worker
     @default_prefix : String = Dusic.secrets["default_prefix"].as_s
     @log_channel_id : UInt64 = Dusic.secrets["log_channel_id"].as_s.to_u64
 
-    def initialize(@shard_id : Int32, @shard_num : Int32)
+    def initialize(@worker : Worker, @shard_id : Int32, @shard_num : Int32)
       @client = Discord::Client.new(
         token: "Bot #{@bot_token}",
         shard: {shard_id: @shard_id, num_shards: @shard_num},
@@ -66,7 +66,11 @@ class Worker
     end
 
     private def message_create_handler(message : Discord::Message) : Nil
-      Log.debug { "New message" }
+      return if @client.session.nil?  # Ignore messages until discord client prepared
+      return if message.author.bot    # Ignore bots
+      return if message.author.system # Ignore system messages
+
+      @worker.message_handler.handle(message.content, dm: message.guild_id.nil?)
     end
 
     private def voice_server_update_handler(payload : Discord::Gateway::VoiceServerUpdatePayload) : Nil
