@@ -70,7 +70,8 @@ class Worker
       return if message.author.bot    # Ignore bots
       return if message.author.system # Ignore system messages
 
-      command_calls = @worker.message_handler.handle(message.content, dm: message.guild_id.nil?)
+      server_id : UInt64 = message.guild_id.try &.to_u64 || 0_u64
+      command_calls = @worker.message_handler.handle(message.content, server_id)
       @worker.command_call_handler.handle(command_calls) unless command_calls.empty?
     end
 

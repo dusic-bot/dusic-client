@@ -1,11 +1,12 @@
 require "../spec_helper"
 
 Spectator.describe Worker::CommandCall do
-  subject(instance) { described_class.new(name, arguments, options) }
+  subject(instance) { described_class.new(name, arguments, options, server_id) }
 
   let(name) { "name" }
   let(arguments) { ["arg1", "arg2"] }
   let(options) { {"opt1" => "val1", "opt2" => nil} }
+  let(server_id) { 0_u64 }
 
   describe "#to_s" do
     subject { instance.to_s }

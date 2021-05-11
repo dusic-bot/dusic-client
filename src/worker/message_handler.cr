@@ -17,13 +17,13 @@ class Worker
     def initialize(@worker : Worker)
     end
 
-    def handle(text : String, dm : Bool = false) : Array(CommandCall)
+    def handle(text : String, server_id : UInt64) : Array(CommandCall)
       # NOTE: this method might return array of command calls in future. For instance:
       #   handle("!help\n!help") # => [CommandCall, CommandCall]
       Log.debug { "Handling text: #{text.inspect}" }
 
       text = text.strip
-      prefix = find_prefix(text, dm: dm)
+      prefix = find_prefix(text, server_id)
       return [] of CommandCall if prefix.nil?
 
       text = text.lchop(prefix[:string])
@@ -31,10 +31,10 @@ class Worker
       text = text.lstrip
       return [] of CommandCall if text.size != old_length && !prefix[:allow_whitespace]
 
-      handle_command_text(text)
+      handle_command_text(text, server_id)
     end
 
-    private def handle_command_text(text) : Array(CommandCall)
+    private def handle_command_text(text : String, server_id : UInt64) : Array(CommandCall)
       words = text.split
       name = words.shift?
       return [] of CommandCall if name.nil?
@@ -56,25 +56,25 @@ class Worker
         options[key.downcase] = sep.empty? ? nil : val
       end
 
-      [CommandCall.new(name, words, options)]
+      [CommandCall.new(name, words, options, server_id)]
     end
 
-    private def find_prefix(text : String, dm : Bool) : Prefix?
-      prefixes = prefixes(dm: dm)
+    private def find_prefix(text : String, server_id : UInt64) : Prefix?
+      prefixes = prefixes(server_id)
       prefixes.find do |prefix|
         text.starts_with?(prefix[:string])
       end
     end
 
-    private def prefixes(dm : Bool) : Array(Prefix)
-      result : Array(Prefix) = [server_prefix]
+    private def prefixes(server_id : UInt64) : Array(Prefix)
+      result : Array(Prefix) = [server_prefix(server_id)]
       result.concat(mention_prefixes)
-      result << DM_PREFIX if dm
+      result << DM_PREFIX if server_id.zero?
 
       result
     end
 
-    private def server_prefix : Prefix
+    private def server_prefix(_server_id : UInt64) : Prefix
       {string: @default_prefix, allow_whitespace: false} # TODO: Fetch server prefix
     end
 

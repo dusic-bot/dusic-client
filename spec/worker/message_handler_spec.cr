@@ -6,10 +6,10 @@ Spectator.describe Worker::MessageHandler do
   let(worker) { Worker.new(0, 1) }
 
   describe "#handle" do
-    subject(result) { instance.handle(text, dm: dm) }
+    subject(result) { instance.handle(text, server_id) }
 
     let(text) { "Sample text" }
-    let(dm) { false }
+    let(server_id) { 1_u64 }
 
     context "when it is not a command" do
       let(text) { "not a command" }
@@ -30,7 +30,18 @@ Spectator.describe Worker::MessageHandler do
     end
 
     context "when it is command" do
-      subject(command_call) { instance.handle(text, dm: dm).first.as(Worker::CommandCall) }
+      subject(command_call) { instance.handle(text, server_id).first.as(Worker::CommandCall) }
+
+      context "when direct message" do
+        let(text) { "not --a command" }
+        let(server_id) { 0_u64 }
+
+        it do
+          expect(command_call.name).to eq("not")
+          expect(command_call.options).to eq({"a" => nil} of String => String?)
+          expect(command_call.arguments).to eq(["command"])
+        end
+      end
 
       context "when simple case" do
         let(text) { "!sample --option1=value1 --OPTION2=value2 --option3 arg1 arg2" }
