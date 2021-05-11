@@ -7,7 +7,7 @@ class Worker
 
     def initialize(@worker : Worker)
       @queues = Hash(UInt64, Queue).new do |hash, key|
-        hash[key] = Queue.new(key)
+        hash[key] = Queue.new(@worker, key)
       end
     end
 
