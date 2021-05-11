@@ -7,5 +7,9 @@ class Worker
 
     def initialize(@name, @arguments, @options)
     end
+
+    def to_s(io : IO) : Nil
+      io << "`" << name << "`" << arguments << options
+    end
   end
 end
