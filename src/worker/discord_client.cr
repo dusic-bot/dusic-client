@@ -70,8 +70,8 @@ class Worker
       return if message.author.bot    # Ignore bots
       return if message.author.system # Ignore system messages
 
-      @worker.message_handler.handle(message.content, dm: message.guild_id.nil?)
-      # TODO
+      command_calls = @worker.message_handler.handle(message.content, dm: message.guild_id.nil?)
+      @worker.command_call_handler.handle(command_calls) unless command_calls.empty?
     end
 
     private def voice_server_update_handler(payload : Discord::Gateway::VoiceServerUpdatePayload) : Nil

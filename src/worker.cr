@@ -12,10 +12,12 @@ class Worker
 
   @discord_client : DiscordClient? = nil
   @message_handler : MessageHandler? = nil
+  @command_call_handler : CommandCallHandler? = nil
 
   def initialize(@shard_id : Int32, @shard_num : Int32)
     @discord_client = DiscordClient.new(self, shard_id, shard_num)
     @message_handler = MessageHandler.new(self)
+    @command_call_handler = CommandCallHandler.new(self)
   end
 
   def run : Nil
@@ -36,5 +38,9 @@ class Worker
 
   def message_handler : MessageHandler
     @message_handler.not_nil!
+  end
+
+  def command_call_handler : CommandCallHandler
+    @command_call_handler.not_nil!
   end
 end
