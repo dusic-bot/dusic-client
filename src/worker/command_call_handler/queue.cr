@@ -36,8 +36,7 @@ class Worker
       private def execution_loop
         Log.debug { "Execution loop started" }
         while command_call = @queue.shift?
-          # TODO: call command_call: worker.command_call_executor.execute(command_call)
-          Log.debug { "Pretending to execute #{command_call}" }
+          @worker.command_call_executor.execute(command_call)
           sleep @timeout
         end
         Log.debug { "Execution loop finished" }
