@@ -3,6 +3,8 @@ require "discordcr"
 class Worker
   # Discord facade
   class DiscordClient
+    alias EmbedFieldData = NamedTuple(title: String, inline: Bool, description: String)
+
     Log = Worker::Log.for("discord_client")
 
     INTENTS = Discord::Gateway::Intents::Guilds | Discord::Gateway::Intents::GuildVoiceStates |
@@ -48,6 +50,32 @@ class Worker
       @client.create_message(@log_channel_id, "`Shard##{@shard_id + 1}/#{@shard_num}`:\n#{message}")
     rescue
       Log.error { "failed to log message '#{message}' to Discord" }
+    end
+
+    def send_embed(
+      channel_id : UInt64,
+      title : String,
+      description : String,
+      footer_text : String? = nil,
+      color : UInt32? = nil,
+      fields : Array(EmbedFieldData) = Array(EmbedFieldData).new
+    ) : UInt64?
+      embed_fields = fields.map do |t|
+        Discord::EmbedField.new(t[:title], t[:description], t[:inline])
+      end
+
+      embed = Discord::Embed.new(
+        title: title,
+        type: "rich",
+        description: description,
+        colour: color,
+        footer: footer_text ? Discord::EmbedFooter.new(footer_text) : nil,
+        fields: embed_fields.empty? ? nil : embed_fields
+      )
+
+      @client.create_message(channel_id, "", embed)
+    rescue exception : Discord::CodeException
+      Log.error(exception: exception) { "Can not send message into channel##{channel_id}" }
     end
 
     private def ready_handler(payload : Discord::Gateway::ReadyPayload) : Nil
