@@ -90,4 +90,42 @@ Spectator.describe Dusic do
       it { expect { call }.to raise_error(OverflowError) }
     end
   end
+
+  describe ".format_seconds" do
+    subject(result) { described_class.format_seconds(argument) }
+
+    let(argument) { 0 }
+
+    it { is_expected.to eq("00:00:00") }
+
+    context "when negative value" do
+      let(argument) { -10 }
+
+      it { is_expected.to eq("-00:00:10") }
+    end
+
+    context "when seconds" do
+      let(argument) { 10 }
+
+      it { is_expected.to eq("00:00:10") }
+    end
+
+    context "when minutes" do
+      let(argument) { 610 }
+
+      it { is_expected.to eq("00:10:10") }
+    end
+
+    context "when hours" do
+      let(argument) { 36610 }
+
+      it { is_expected.to eq("10:10:10") }
+    end
+
+    context "when days" do
+      let(argument) { 90610 }
+
+      it { is_expected.to eq("25:10:10") }
+    end
+  end
 end
