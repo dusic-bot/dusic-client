@@ -32,4 +32,16 @@ module Dusic::Misc
   def format_seconds(seconds : Int32) : String
     format_seconds(seconds.seconds)
   end
+
+  # Return milliseconds since moment
+  def ms_since(time : Time) : Float64
+    (Time.utc - time).total_milliseconds
+  end
+
+  # Return named color UInt32 which can be accepted by Discord
+  def color(key : String) : UInt32?
+    I18n.translate("color.#{key}").to_u32
+  rescue ArgumentError
+    nil
+  end
 end

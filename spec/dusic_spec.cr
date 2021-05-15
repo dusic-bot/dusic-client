@@ -128,4 +128,26 @@ Spectator.describe Dusic do
       it { is_expected.to eq("25:10:10") }
     end
   end
+
+  describe ".ms_since" do
+    subject(result) { described_class.ms_since(argument) }
+
+    let(argument) { Time.utc }
+
+    it { is_expected.to be_a(Float64) }
+  end
+
+  describe ".color" do
+    subject(result) { described_class.color(argument) }
+
+    let(argument) { "success" }
+
+    it { is_expected.to be_a(UInt32) }
+
+    context "when not existing" do
+      let(argument) { "well" }
+
+      it { is_expected.to be_nil }
+    end
+  end
 end
