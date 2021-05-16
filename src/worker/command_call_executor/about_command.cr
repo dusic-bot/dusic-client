@@ -4,8 +4,11 @@ class Worker
   class CommandCallExecutor
     class AboutCommand < Base
       def execute
-        Log.debug { "Command #{self.class}" }
-        # TODO
+        reply(
+          t("commands.about.title"),
+          t("commands.about.text", {version: Dusic::VERSION, shard: @worker.shard_id}),
+          "success"
+        )
       end
     end
   end

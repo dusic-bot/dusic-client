@@ -15,6 +15,9 @@ class Worker
   @command_call_handler : CommandCallHandler? = nil
   @command_call_executor : CommandCallExecutor? = nil
 
+  getter shard_id : Int32
+  getter shard_num : Int32
+
   def initialize(@shard_id : Int32, @shard_num : Int32)
     @discord_client = DiscordClient.new(self, shard_id, shard_num)
     @message_handler = MessageHandler.new(self)
