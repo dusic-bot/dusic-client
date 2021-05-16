@@ -17,7 +17,7 @@ class Worker
     def initialize(@worker : Worker)
     end
 
-    def handle(text : String, server_id : UInt64) : Array(CommandCall)
+    def handle(text : String, server_id : UInt64, channel_id : UInt64) : Array(CommandCall)
       # NOTE: this method might return array of command calls in future. For instance:
       #   handle("!help\n!help") # => [CommandCall, CommandCall]
       Log.debug { "Handling text: #{text.inspect}" }
@@ -31,10 +31,10 @@ class Worker
       text = text.lstrip
       return [] of CommandCall if text.size != old_length && !prefix[:allow_whitespace]
 
-      handle_command_text(text, server_id)
+      handle_command_text(text, server_id, channel_id)
     end
 
-    private def handle_command_text(text : String, server_id : UInt64) : Array(CommandCall)
+    private def handle_command_text(text : String, server_id : UInt64, channel_id : UInt64) : Array(CommandCall)
       words = text.split
       name = words.shift?
       return [] of CommandCall if name.nil?
@@ -56,7 +56,7 @@ class Worker
         options[key.downcase] = sep.empty? ? nil : val
       end
 
-      [CommandCall.new(name, words, options, server_id)]
+      [CommandCall.new(name, words, options, server_id, channel_id)]
     end
 
     private def find_prefix(text : String, server_id : UInt64) : Prefix?
