@@ -71,9 +71,10 @@ class Worker
         fields: embed_fields.empty? ? nil : embed_fields
       )
 
-      @client.create_message(channel_id, "", embed)
+      @client.create_message(channel_id, "", embed).id.to_u64
     rescue exception : Discord::CodeException
       Log.error(exception: exception) { "Can not send message into channel##{channel_id}" }
+      nil
     end
 
     private def ready_handler(payload : Discord::Gateway::ReadyPayload) : Nil
