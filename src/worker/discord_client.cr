@@ -60,9 +60,7 @@ class Worker
       color : UInt32? = nil,
       fields : Array(EmbedFieldData) = Array(EmbedFieldData).new
     ) : UInt64?
-      embed_fields = fields.map do |t|
-        Discord::EmbedField.new(t[:title], t[:description], t[:inline])
-      end
+      embed_fields = fields.map { |t| Discord::EmbedField.new(t[:title], t[:description], t[:inline]) }
 
       embed = Discord::Embed.new(
         title: title,
