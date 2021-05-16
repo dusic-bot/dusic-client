@@ -19,6 +19,7 @@ class Worker
   getter shard_num : Int32
 
   def initialize(@shard_id : Int32, @shard_num : Int32)
+    @api_client = ApiClient.new(self)
     @discord_client = DiscordClient.new(self, shard_id, shard_num)
     @message_handler = MessageHandler.new(self)
     @command_call_handler = CommandCallHandler.new(self)
@@ -35,6 +36,10 @@ class Worker
     Log.info { "stopping worker #{@shard_id}_#{@shard_num}" }
     discord_client.stop
     @is_running = false
+  end
+
+  def api_client : ApiClient
+    @api_client.not_nil!
   end
 
   def discord_client : DiscordClient
