@@ -18,10 +18,10 @@ class Worker
     @default_prefix : String = Dusic.secrets["default_prefix"].as_s
     @log_channel_id : UInt64 = Dusic.secrets["log_channel_id"].as_s.to_u64
 
-    def initialize(@worker : Worker, @shard_id : Int32, @shard_num : Int32)
+    def initialize(@worker : Worker)
       @client = Discord::Client.new(
         token: "Bot #{@bot_token}",
-        shard: {shard_id: @shard_id, num_shards: @shard_num},
+        shard: {shard_id: @worker.shard_id, num_shards: @worker.shard_num},
         client_id: @bot_id,
         intents: INTENTS
       )
@@ -47,7 +47,7 @@ class Worker
     end
 
     def log(message : String) : Nil
-      @client.create_message(@log_channel_id, "`Shard##{@shard_id + 1}/#{@shard_num}`:\n#{message}")
+      @client.create_message(@log_channel_id, "`Shard##{@worker.shard_id + 1}/#{@worker.shard_num}`:\n#{message}")
     rescue
       Log.error { "failed to log message '#{message}' to Discord" }
     end
@@ -115,7 +115,7 @@ class Worker
           I18n.translate("status", {
             prefix:   @default_prefix,
             version:  Dusic::VERSION,
-            shard_id: @shard_id,
+            shard_id: @worker.shard_id,
           }),
           Discord::GamePlaying::Type::Listening
         )

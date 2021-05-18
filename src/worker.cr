@@ -20,7 +20,7 @@ class Worker
 
   def initialize(@shard_id : Int32, @shard_num : Int32)
     @api_client = ApiClient.new(self)
-    @discord_client = DiscordClient.new(self, shard_id, shard_num)
+    @discord_client = DiscordClient.new(self)
     @message_handler = MessageHandler.new(self)
     @command_call_handler = CommandCallHandler.new(self)
     @command_call_executor = CommandCallExecutor.new(self)
