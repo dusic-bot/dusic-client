@@ -30,11 +30,13 @@ class Worker
     Log.info { "starting worker #{@shard_id}_#{@shard_num}" }
     @is_running = true
     discord_client.run
+    api_client.run
   end
 
   def stop : Nil
     Log.info { "stopping worker #{@shard_id}_#{@shard_num}" }
     discord_client.stop
+    api_client.stop
     @is_running = false
   end
 

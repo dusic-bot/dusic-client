@@ -10,7 +10,7 @@ class Worker
         getter size : Int32
         getter server_id : UInt64?
         getter user_id : UInt64?
-        @[JSON::Field(converter: Converter::DatetimeToTime)]
+        @[JSON::Field(converter: Worker::ApiClient::Converter::DatetimeToTime)]
         getter date : Time
       end
     end

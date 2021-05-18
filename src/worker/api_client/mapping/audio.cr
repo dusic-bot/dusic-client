@@ -8,7 +8,7 @@ class Worker
 
         getter artist : String
         getter title : String
-        @[JSON::Field(converter: Converter::SecondsToTimeSpan)]
+        @[JSON::Field(converter: Worker::ApiClient::Converter::SecondsToTimeSpan)]
         getter duration : Time::Span
         getter manager : String?
         getter id : String?

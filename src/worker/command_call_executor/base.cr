@@ -23,10 +23,14 @@ class Worker
                  elsif @command_call.server_id.zero?
                    I18n.default_locale
                  else
-                   "en" # TODO: server locale
+                   server.setting.language
                  end
 
         I18n.translate(key, options, locale, count, default, iter)
+      end
+
+      private def server : ApiClient::Mapping::Server
+        @worker.api_client.server(@command_call.server_id)
       end
     end
   end
