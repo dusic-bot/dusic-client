@@ -6,8 +6,7 @@ class Worker
 
     @is_running : Bool = false
     @http_client : HttpClient
-
-    getter servers : Hash(UInt64, Mapping::Server)
+    @servers : Hash(UInt64, Mapping::Server)
 
     def initialize(@worker : Worker)
       @http_client = HttpClient.new
@@ -17,6 +16,7 @@ class Worker
     def run : Nil
       Log.info { "starting API client" }
       @is_running = true
+      renew_servers_cache
       # TODO
     end
 
@@ -27,7 +27,8 @@ class Worker
     end
 
     def server(server_id : UInt64) : Mapping::Server
-      servers[server_id]
+      # TODO: Outdating cache?
+      @servers[server_id]
     end
 
     def server_save(server) : Mapping::Server
@@ -59,6 +60,12 @@ class Worker
         @http_client.get_raw("audios/#{manager}/#{id}?format=#{format}&volume=#{volume}") do |io|
           IO.copy(io, file_io)
         end
+      end
+    end
+
+    private def renew_servers_cache : Nil
+      get_servers.each do |server|
+        @servers[server.id] = server
       end
     end
   end
