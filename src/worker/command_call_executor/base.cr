@@ -13,7 +13,7 @@ class Worker
         fields : Array(DiscordClient::EmbedFieldData) = Array(DiscordClient::EmbedFieldData).new
       ) : Nil
         color = color_key ? Dusic.color(color_key) : nil
-        footer_text = "footer_text"
+        footer_text = "#{Dusic.ms_since(@command_call.call_time)}ms"
         @worker.discord_client.send_embed(@command_call.channel_id, title, description, footer_text, color, fields)
       end
 
