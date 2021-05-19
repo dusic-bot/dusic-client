@@ -6,23 +6,25 @@ class Worker
 
     @is_running : Bool = false
     @http_client : HttpClient
+    @websocket_client : WebsocketClient
     @servers : Hash(UInt64, Mapping::Server)
 
     def initialize(@worker : Worker)
       @http_client = HttpClient.new
+      @websocket_client = WebsocketClient.new(@worker)
       @servers = Hash(UInt64, Mapping::Server).new { |hash, id| hash[id] = get_server(id) }
     end
 
     def run : Nil
       Log.info { "starting API client" }
       @is_running = true
+      @websocket_client.run
       renew_servers_cache
-      # TODO
     end
 
     def stop : Nil
       Log.info { "stopping API client" }
-      # TODO
+      @websocket_client.stop
       @is_running = false
     end
 
