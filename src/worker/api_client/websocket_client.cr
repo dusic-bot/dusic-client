@@ -1,9 +1,11 @@
 require "http/client"
+require "json"
 require "uri"
 
 class Worker
   class ApiClient
     class WebsocketClient
+      alias MessageHandler = Hash(String, JSON::Any) -> Nil
       Log = Worker::ApiClient::Log.for("ws")
 
       RECONNECT_INTERVAL = 30.seconds
@@ -18,6 +20,7 @@ class Worker
       }
       @ws_client : HTTP::WebSocket? = nil
       @bot_id : UInt64 = Dusic.secrets["bot_id"].as_s.to_u64
+      @handlers : Hash(String, MessageHandler) = {} of String => MessageHandler
 
       def initialize(@worker : Worker)
       end
@@ -38,6 +41,11 @@ class Worker
       def stop : Nil
         @do_reconnect = false
         disconnect
+      end
+
+      def on(channel : String, &block : MessageHandler) : Nil
+        identifier = "{\"channel\":\"#{channel}\"}"
+        @handlers[identifier] = block
       end
 
       private def connect : Nil
@@ -84,6 +92,15 @@ class Worker
         send(json_string)
       end
 
+      private def send_subscribe(identifier : String) : Nil
+        send_json do |json|
+          json.object do
+            json.field "command", "subscribe"
+            json.field "identifier", identifier
+          end
+        end
+      end
+
       private def on_close(code : HTTP::WebSocket::CloseCode, msg : String) : Nil
         Log.info { "closed (#{code}): #{msg}" }
       end
@@ -101,11 +118,37 @@ class Worker
       end
 
       private def handle_message(msg : String) : Nil
-        # TODO
+        json = JSON.parse(msg)
+        type = json["type"]?.try &.as_s || "channel_message"
 
-
+        case type
+        when "welcome"
+          @handlers.keys.each { |channel| send_subscribe(channel) }
+        when "ping"
+          # NOTE: do nothing
+        when "confirm_subscription"
+          # NOTE: that's good
+        when "channel_message"
+          handle_channel_message(json)
+        else
+          Log.warn { "unknown message type #{type}" }
+        end
       rescue exception
         Log.error(exception: exception) { "message handling failed" }
+      end
+
+      private def handle_channel_message(json : JSON::Any) : Nil
+        identifier = json["identifier"].as_s
+        message = json["message"].as_h
+
+        handler = @handlers[identifier]?
+        if handler
+          handler.call(message)
+        else
+          Log.warn { "handler undefined for #{identifier}" }
+        end
+      rescue exception
+        Log.error(exception: exception) { "channel message handling failed" }
       end
     end
   end

@@ -11,7 +11,7 @@ class Worker
 
     def initialize(@worker : Worker)
       @http_client = HttpClient.new
-      @websocket_client = WebsocketClient.new(@worker)
+      @websocket_client = setup_websocket_client
       @servers = Hash(UInt64, Mapping::Server).new { |hash, id| hash[id] = get_server(id) }
     end
 
@@ -69,6 +69,18 @@ class Worker
       get_servers.each do |server|
         @servers[server.id] = server
       end
+    end
+
+    private def setup_websocket_client : WebsocketClient
+      client = WebsocketClient.new(@worker)
+      client.on("Api::V2::ShardsChannel") do |message|
+        # TODO
+      end
+      client.on("Api::V2::DonationsChannel") do |message|
+        # TODO
+      end
+
+      client
     end
   end
 end
