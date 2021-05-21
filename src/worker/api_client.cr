@@ -74,10 +74,20 @@ class Worker
     private def setup_websocket_client : WebsocketClient
       client = WebsocketClient.new(@worker)
       client.on("Api::V2::ShardsChannel") do |message|
-        # TODO
+        case message["action"].as_s
+        when "update_data"
+          # TODO: Send stats
+        when "restart"
+          # TODO: Restart shard
+        when "stop"
+          Process.signal(Signal::INT, Process.pid)
+        end
       end
       client.on("Api::V2::DonationsChannel") do |message|
-        # TODO
+        donation = Mapping::Donation.from_json(message.to_json)
+        Log.info { "New donation for server##{donation.server_id} registered" }
+
+        # TODO: Handle donation
       end
 
       client
