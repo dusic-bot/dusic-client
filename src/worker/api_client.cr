@@ -12,7 +12,15 @@ class Worker
     def initialize(@worker : Worker)
       @servers = Hash(UInt64, Mapping::Server).new { |hash, id| hash[id] = get_server(id) }
       @http_client = HttpClient.new
-      @websocket_client = setup_websocket_client
+      @websocket_client = WebsocketClient.new(@worker)
+
+      @websocket_client.on("Api::V2::ShardsChannel") do |message|
+        handle_shards_message(message)
+      end
+      @websocket_client.on("Api::V2::DonationsChannel") do |message|
+        donation = Mapping::Donation.from_json(message.to_json)
+        handle_new_donation(donation)
+      end
     end
 
     def run : Nil
@@ -71,24 +79,29 @@ class Worker
       end
     end
 
-    private def setup_websocket_client : WebsocketClient
-      client = WebsocketClient.new(@worker)
-      client.on("Api::V2::ShardsChannel") do |message|
-        case message["action"].as_s
-        when "update_data"
-          # TODO: Send stats
-        when "restart"
-          # TODO: Restart shard
-        when "stop"
-          Process.signal(Signal::INT, Process.pid)
-        end
-      end
-      client.on("Api::V2::DonationsChannel") do |message|
-        donation = Mapping::Donation.from_json(message.to_json)
-        handle_new_donation(donation)
-      end
+    private def publish_stats : Nil
+      count = @worker.discord_client.servers_count
+      cached = @servers.size
+      active = 0 # TODO: Count of active audio connections
+      data = {
+        action: "connection_data",
+        servers_count: count,
+        cached_servers_count: cached,
+        active_servers_count: active
+      }.to_json
 
-      client
+      @websocket_client.message("Api::V2::ShardsChannel", data)
+    end
+
+    private def handle_shards_message(message : Hash(String, JSON::Any)) : Nil
+      case message["action"].as_s
+      when "update_data"
+        publish_stats
+      when "restart"
+        # TODO: Restart shard
+      when "stop"
+        Process.signal(Signal::INT, Process.pid)
+      end
     end
 
     private def handle_new_donation(donation : Mapping::Donation) : Nil

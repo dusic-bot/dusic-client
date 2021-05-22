@@ -48,6 +48,16 @@ class Worker
         @handlers[identifier] = block
       end
 
+      def message(channel : String, data : String)
+        send_json do |json|
+          json.object do
+            json.field "command", "message"
+            json.field "identifier", "{\"channel\":\"#{channel}\"}"
+            json.field "data", data
+          end
+        end
+      end
+
       private def connect : Nil
         Log.warn { "client exists!" } if @ws_client
 

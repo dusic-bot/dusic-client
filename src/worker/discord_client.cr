@@ -89,6 +89,10 @@ class Worker
       cached_guild.name
     end
 
+    def servers_count : UInt64
+      cache.guilds.size.to_u64
+    end
+
     private def cache : Discord::Cache
       @client.cache.not_nil!
     end
