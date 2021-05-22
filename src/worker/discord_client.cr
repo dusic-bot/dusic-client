@@ -52,6 +52,11 @@ class Worker
       Log.error { "failed to log message '#{message}' to Discord" }
     end
 
+    def send_dm(user_id : UInt64, text : String) : UInt64?
+      channel_id = cache.resolve_dm_channel(user_id)
+      @client.create_message(channel_id, text).id.to_u64
+    end
+
     def send_embed(
       channel_id : UInt64,
       title : String,
@@ -75,6 +80,17 @@ class Worker
     rescue exception : Discord::CodeException
       Log.error(exception: exception) { "Can not send message into channel##{channel_id}" }
       nil
+    end
+
+    def server_name(server_id : UInt64) : String?
+      cached_guild = cache.guilds[server_id]?
+      return nil if cached_guild.nil?
+
+      cached_guild.name
+    end
+
+    private def cache : Discord::Cache
+      @client.cache.not_nil!
     end
 
     private def ready_handler(payload : Discord::Gateway::ReadyPayload) : Nil

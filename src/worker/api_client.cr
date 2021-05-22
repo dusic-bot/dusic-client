@@ -10,9 +10,9 @@ class Worker
     @servers : Hash(UInt64, Mapping::Server)
 
     def initialize(@worker : Worker)
+      @servers = Hash(UInt64, Mapping::Server).new { |hash, id| hash[id] = get_server(id) }
       @http_client = HttpClient.new
       @websocket_client = setup_websocket_client
-      @servers = Hash(UInt64, Mapping::Server).new { |hash, id| hash[id] = get_server(id) }
     end
 
     def run : Nil
@@ -85,12 +85,33 @@ class Worker
       end
       client.on("Api::V2::DonationsChannel") do |message|
         donation = Mapping::Donation.from_json(message.to_json)
-        Log.info { "New donation for server##{donation.server_id} registered" }
-
-        # TODO: Handle donation
+        handle_new_donation(donation)
       end
 
       client
+    end
+
+    private def handle_new_donation(donation : Mapping::Donation) : Nil
+      Log.info { "New donation registered" }
+      server_id = donation.server_id
+      return if server_id.nil?
+
+      server = server(server_id)
+      last_donation = server.last_donation
+      return if last_donation && last_donation.date > donation.date
+
+      server.last_donation = donation
+
+      @worker.discord_client.log("Registered donation##{donation.id}")
+
+      user_id = donation.user_id
+      server_name = @worker.discord_client.server_name(server_id)
+      if user_id && server_name
+        text = I18n.translate("message.donation", {server_name: server_name}, server.setting.language)
+        @worker.discord_client.send_dm(user_id, text)
+      end
+    rescue exception
+      Log.error(exception: exception) { "failed to handle new donation" }
     end
   end
 end
