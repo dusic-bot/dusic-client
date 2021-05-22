@@ -84,10 +84,10 @@ class Worker
       cached = @servers.size
       active = 0 # TODO: Count of active audio connections
       data = {
-        action: "connection_data",
-        servers_count: count,
+        action:               "connection_data",
+        servers_count:        count,
         cached_servers_count: cached,
-        active_servers_count: active
+        active_servers_count: active,
       }.to_json
 
       @websocket_client.message("Api::V2::ShardsChannel", data)
