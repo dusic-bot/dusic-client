@@ -74,8 +74,15 @@ class Worker
       result
     end
 
-    private def server_prefix(_server_id : UInt64) : Prefix
-      {string: @default_prefix, allow_whitespace: false} # TODO: Fetch server prefix
+    private def server_prefix(server_id : UInt64) : Prefix
+      server_prefix : String? = begin
+        @worker.api_client.server(server_id).setting.prefix
+      rescue exception
+        Log.error(exception: exception) { "failed to fetch prefix for server##{server_id}" }
+        nil
+      end
+
+      {string: server_prefix || @default_prefix, allow_whitespace: false}
     end
 
     private def mention_prefixes : Array(Prefix)
