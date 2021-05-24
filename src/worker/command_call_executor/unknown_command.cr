@@ -5,8 +5,11 @@ class Worker
     # NOTE: Pseudo-command
     class UnknownCommand < Base
       def execute
-        Log.debug { "Command #{self.class}" }
-        # TODO
+        reply(
+          t("commands.unknown.title"),
+          t("commands.unknown.text", {name: @command_call.name}),
+          "danger"
+        )
       end
     end
   end
