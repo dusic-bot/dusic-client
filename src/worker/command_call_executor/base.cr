@@ -36,6 +36,14 @@ class Worker
       private def prefix : String
         server.setting.prefix || Dusic.secrets["default_prefix"].as_s
       end
+
+      private def premium? : Bool
+        if donation = server.last_donation
+          Time.utc <= donation.date + 31.day
+        else
+          false
+        end
+      end
     end
   end
 end
