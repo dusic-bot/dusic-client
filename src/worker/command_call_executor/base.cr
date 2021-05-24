@@ -32,6 +32,10 @@ class Worker
       private def server : ApiClient::Mapping::Server
         @worker.api_client.server(@command_call.server_id)
       end
+
+      private def prefix : String
+        server.setting.prefix || Dusic.secrets["default_prefix"].as_s
+      end
     end
   end
 end
