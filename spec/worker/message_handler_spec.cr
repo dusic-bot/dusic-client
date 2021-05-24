@@ -6,9 +6,11 @@ Spectator.describe Worker::MessageHandler do
   let(worker) { Worker.new(0, 1) }
 
   describe "#handle" do
-    subject(result) { instance.handle(text, server_id, channel_id) }
+    subject(result) { instance.handle(text, context) }
 
     let(text) { "Sample text" }
+    let(context) { {author_id: author_id, server_id: server_id, channel_id: channel_id} }
+    let(author_id) { 1_u64 }
     let(server_id) { 1_u64 }
     let(channel_id) { 1_u64 }
 
@@ -31,10 +33,11 @@ Spectator.describe Worker::MessageHandler do
     end
 
     context "when it is command" do
-      subject(command_call) { instance.handle(text, server_id, channel_id).first.as(Worker::CommandCall) }
+      subject(command_call) { instance.handle(text, context).first.as(Worker::CommandCall) }
 
       context "when direct message" do
         let(text) { "not --a command" }
+        let(author_id) { 1_u64 }
         let(server_id) { 0_u64 }
         let(channel_id) { 0_u64 }
 

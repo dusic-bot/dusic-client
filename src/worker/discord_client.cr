@@ -117,9 +117,12 @@ class Worker
       return if message.author.bot    # Ignore bots
       return if message.author.system # Ignore system messages
 
-      server_id : UInt64 = message.guild_id.try &.to_u64 || 0_u64
-      channel_id : UInt64 = message.channel_id.to_u64
-      command_calls = @worker.message_handler.handle(message.content, server_id, channel_id)
+      context = {
+        author_id:  message.author.id.to_u64,
+        server_id:  message.guild_id.try &.to_u64 || 0_u64,
+        channel_id: message.channel_id.to_u64,
+      }
+      command_calls = @worker.message_handler.handle(message.content, context)
       @worker.command_call_handler.handle(command_calls) unless command_calls.empty?
     end
 

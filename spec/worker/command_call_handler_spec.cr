@@ -8,12 +8,11 @@ Spectator.describe Worker::CommandCallHandler do
   describe "#handle" do
     subject(call) { instance.handle([command_call]) }
 
-    let(command_call) { Worker::CommandCall.new(name, arguments, options, server_id, channel_id) }
+    let(command_call) { Worker::CommandCall.new(name, arguments, options, context) }
     let(name) { "name" }
     let(arguments) { ["arg1", "arg2"] }
     let(options) { {"opt1" => "val1", "opt2" => nil} }
-    let(server_id) { 0_u64 }
-    let(channel_id) { 0_u64 }
+    let(context) { {author_id: 0_u64, server_id: 0_u64, channel_id: 0_u64} }
 
     it do
       expect { call }.not_to raise_error

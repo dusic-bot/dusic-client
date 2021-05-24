@@ -2,6 +2,7 @@ class Worker
   # Turn messages into command calls
   class MessageHandler
     alias Prefix = NamedTuple(string: String, allow_whitespace: Bool)
+    alias MessageContext = NamedTuple(author_id: UInt64, server_id: UInt64, channel_id: UInt64)
 
     DM_PREFIX             = {string: "", allow_whitespace: true}
     DOWNCASE_COMMAND_NAME = true
@@ -17,13 +18,13 @@ class Worker
     def initialize(@worker : Worker)
     end
 
-    def handle(text : String, server_id : UInt64, channel_id : UInt64) : Array(CommandCall)
+    def handle(text : String, context : MessageContext) : Array(CommandCall)
       # NOTE: this method might return array of command calls in future. For instance:
       #   handle("!help\n!help") # => [CommandCall, CommandCall]
       Log.debug { "Handling text: #{text.inspect}" }
 
       text = text.strip
-      prefix = find_prefix(text, server_id)
+      prefix = find_prefix(text, context[:server_id])
       return [] of CommandCall if prefix.nil?
 
       text = text.lchop(prefix[:string])
@@ -31,10 +32,10 @@ class Worker
       text = text.lstrip
       return [] of CommandCall if text.size != old_length && !prefix[:allow_whitespace]
 
-      handle_command_text(text, server_id, channel_id)
+      handle_command_text(text, context)
     end
 
-    private def handle_command_text(text : String, server_id : UInt64, channel_id : UInt64) : Array(CommandCall)
+    private def handle_command_text(text : String, context : MessageContext) : Array(CommandCall)
       words = text.split
       name = words.shift?
       return [] of CommandCall if name.nil?
@@ -56,7 +57,7 @@ class Worker
         options[key.downcase] = sep.empty? ? nil : val
       end
 
-      [CommandCall.new(name, words, options, server_id, channel_id)]
+      [CommandCall.new(name, words, options, context)]
     end
 
     private def find_prefix(text : String, server_id : UInt64) : Prefix?
