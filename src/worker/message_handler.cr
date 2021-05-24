@@ -2,7 +2,6 @@ class Worker
   # Turn messages into command calls
   class MessageHandler
     alias Prefix = NamedTuple(string: String, allow_whitespace: Bool)
-    alias MessageContext = NamedTuple(author_id: UInt64, server_id: UInt64, channel_id: UInt64)
 
     DM_PREFIX             = {string: "", allow_whitespace: true}
     DOWNCASE_COMMAND_NAME = true
@@ -18,7 +17,7 @@ class Worker
     def initialize(@worker : Worker)
     end
 
-    def handle(text : String, context : MessageContext) : Array(CommandCall)
+    def handle(text : String, context : CommandCall::Context) : Array(CommandCall)
       # NOTE: this method might return array of command calls in future. For instance:
       #   handle("!help\n!help") # => [CommandCall, CommandCall]
       Log.debug { "Handling text: #{text.inspect}" }
@@ -35,7 +34,7 @@ class Worker
       handle_command_text(text, context)
     end
 
-    private def handle_command_text(text : String, context : MessageContext) : Array(CommandCall)
+    private def handle_command_text(text : String, context : CommandCall::Context) : Array(CommandCall)
       words = text.split
       name = words.shift?
       return [] of CommandCall if name.nil?

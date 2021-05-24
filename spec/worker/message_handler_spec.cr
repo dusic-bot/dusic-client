@@ -9,8 +9,11 @@ Spectator.describe Worker::MessageHandler do
     subject(result) { instance.handle(text, context) }
 
     let(text) { "Sample text" }
-    let(context) { {author_id: author_id, server_id: server_id, channel_id: channel_id} }
+    let(context) do
+      {author_id: author_id, author_roles_ids: author_roles_ids, server_id: server_id, channel_id: channel_id}
+    end
     let(author_id) { 1_u64 }
+    let(author_roles_ids) { [] of UInt64 }
     let(server_id) { 1_u64 }
     let(channel_id) { 1_u64 }
 

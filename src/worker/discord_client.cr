@@ -117,10 +117,16 @@ class Worker
       return if message.author.bot    # Ignore bots
       return if message.author.system # Ignore system messages
 
+      author_roles_ids : Array(UInt64) = [] of UInt64
+      if member = message.member
+        member.roles.map &.to_u64
+      end
+
       context = {
-        author_id:  message.author.id.to_u64,
-        server_id:  message.guild_id.try &.to_u64 || 0_u64,
-        channel_id: message.channel_id.to_u64,
+        author_id:        message.author.id.to_u64,
+        author_roles_ids: author_roles_ids,
+        server_id:        message.guild_id.try &.to_u64 || 0_u64,
+        channel_id:       message.channel_id.to_u64,
       }
       command_calls = @worker.message_handler.handle(message.content, context)
       @worker.command_call_handler.handle(command_calls) unless command_calls.empty?

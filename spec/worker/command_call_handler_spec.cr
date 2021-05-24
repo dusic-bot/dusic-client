@@ -12,7 +12,7 @@ Spectator.describe Worker::CommandCallHandler do
     let(name) { "name" }
     let(arguments) { ["arg1", "arg2"] }
     let(options) { {"opt1" => "val1", "opt2" => nil} }
-    let(context) { {author_id: 0_u64, server_id: 0_u64, channel_id: 0_u64} }
+    let(context) { {author_id: 0_u64, author_roles_ids: [] of UInt64, server_id: 0_u64, channel_id: 0_u64} }
 
     it do
       expect { call }.not_to raise_error

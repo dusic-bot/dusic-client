@@ -6,10 +6,14 @@ Spectator.describe Worker::CommandCall do
   let(name) { "name" }
   let(arguments) { ["arg1", "arg2"] }
   let(options) { {"opt1" => "val1", "opt2" => nil} }
-  let(context) { {author_id: author_id, server_id: server_id, channel_id: channel_id} }
-  let(author_id) { 1_u64 }
-  let(server_id) { 0_u64 }
-  let(channel_id) { 0_u64 }
+  let(context) do
+    {
+      author_id:        1_u64,
+      author_roles_ids: [] of UInt64,
+      server_id:        0_u64,
+      channel_id:       0_u64,
+    }
+  end
 
   describe "#to_s" do
     subject { instance.to_s }
