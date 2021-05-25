@@ -3,6 +3,14 @@ require "./command_call_executor/*"
 class Worker
   # Handle command calls
   class CommandCallExecutor
+    enum AccessLevel
+      Base
+      ServerDj
+      ServerAdministrator
+      ServerOwner
+      BotOwner
+    end
+
     Log = Worker::Log.for("command_call_executor")
 
     COMMANDS_LIST = {
@@ -26,6 +34,7 @@ class Worker
     def initialize(@worker : Worker)
     end
 
+    # TODO: Handle access level and DM/server call
     def execute(command_call : CommandCall) : Nil
       begin
         {% for command, aliases in COMMANDS_LIST %}

@@ -44,6 +44,25 @@ class Worker
           false
         end
       end
+
+      def author_access_level : AccessLevel
+        bot_owner_id = Dusic.secrets["bot_owner_id"].as_s.to_u64
+        return AccessLevel::BotOwner if @command_call.author_id == bot_owner_id
+
+        return AccessLevel::Base if @command_call.server_id.zero?
+
+        server_owner_id = @worker.discord_client.server_owner_id(@command_call.server_id)
+        return AccessLevel::ServerOwner if @command_call.author_id == server_owner_id
+
+        author_roles = @command_call.author_roles_ids
+        admin_roles = @worker.discord_client.server_administrator_roles_ids(@command_call.server_id)
+        return AccessLevel::ServerAdministrator if (author_roles & admin_roles).any?
+
+        dj_role = server.setting.dj_role
+        return AccessLevel::ServerDj if dj_role && author_roles.includes?(dj_role)
+
+        AccessLevel::Base
+      end
     end
   end
 end

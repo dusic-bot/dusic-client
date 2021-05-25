@@ -90,6 +90,18 @@ class Worker
       cache.guilds.size.to_u64
     end
 
+    def server_owner_id(server_id : UInt64) : UInt64
+      cache.guilds[server_id].owner_id.to_u64
+    end
+
+    def server_administrator_roles_ids(server_id : UInt64) : Array(UInt64)
+      admin_roles = cache.guilds[server_id].roles.select do |r|
+        r.permissions.administrator?
+      end
+
+      admin_roles.map &.id.to_u64
+    end
+
     private def cache : Discord::Cache
       @client.cache.not_nil!
     end
