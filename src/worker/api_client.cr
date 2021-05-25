@@ -119,7 +119,7 @@ class Worker
 
       user_id = donation.user_id
       server_name = @worker.discord_client.server_name(server_id)
-      if user_id && server_name
+      if user_id
         text = I18n.translate("message.donation", {server_name: server_name}, server.setting.language)
         @worker.discord_client.send_dm(user_id, text)
       end

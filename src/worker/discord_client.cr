@@ -82,11 +82,8 @@ class Worker
       nil
     end
 
-    def server_name(server_id : UInt64) : String?
-      cached_guild = cache.guilds[server_id]?
-      return nil if cached_guild.nil?
-
-      cached_guild.name
+    def server_name(server_id : UInt64) : String
+      cache.guilds[server_id].name
     end
 
     def servers_count : UInt64
