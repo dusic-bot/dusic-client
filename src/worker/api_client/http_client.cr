@@ -7,7 +7,7 @@ class Worker
       Log = Worker::ApiClient::Log.for("http")
 
       CONNECTION_TIMEOUT = 5.seconds
-      RW_TIMEOUT         = 25.seconds
+      RW_TIMEOUT         = 40.seconds
 
       @host : String = Dusic.secrets["api"]["host"].as_s
       @use_ssl : Bool = Dusic.secrets["api"]["ssl"].as_bool
