@@ -51,17 +51,29 @@ class Worker
 
         return AccessLevel::Base if @command_call.server_id.zero?
 
-        server_owner_id = @worker.discord_client.server_owner_id(@command_call.server_id)
-        return AccessLevel::ServerOwner if @command_call.author_id == server_owner_id
+        begin
+          server_owner_id = @worker.discord_client.server_owner_id(@command_call.server_id)
+          return AccessLevel::ServerOwner if @command_call.author_id == server_owner_id
+        rescue exception : DiscordClient::NotFoundError
+          Log.error(exception: exception) { "failed to fetch server owner id" }
+        end
 
         author_roles = @command_call.author_roles_ids
-        admin_roles = @worker.discord_client.server_administrator_roles_ids(@command_call.server_id)
-        return AccessLevel::ServerAdministrator if (author_roles & admin_roles).any?
+
+        begin
+          admin_roles = @worker.discord_client.server_administrator_roles_ids(@command_call.server_id)
+          return AccessLevel::ServerAdministrator if (author_roles & admin_roles).any?
+        rescue exception : DiscordClient::NotFoundError
+          Log.error(exception: exception) { "failed to fetch server admin roles" }
+        end
 
         dj_role = server.setting.dj_role
-        return AccessLevel::ServerDj if dj_role && author_roles.includes?(dj_role)
+        return AccessLevel::ServerDj if dj_role.nil? || author_roles.includes?(dj_role)
 
         AccessLevel::Base
+      rescue exception
+        Log.error(exception: exception) { "failed to determine access level" }
+        AccessLevel::ServerDj
       end
     end
   end
