@@ -1,5 +1,7 @@
 require "discordcr"
 
+require "./discord_client/*"
+
 class Worker
   # Discord facade
   class DiscordClient
@@ -84,6 +86,8 @@ class Worker
 
     def server_name(server_id : UInt64) : String
       cache.guilds[server_id].name
+    rescue exception : KeyError
+      raise NotFoundError.new(cause: exception)
     end
 
     def servers_count : UInt64
@@ -92,6 +96,8 @@ class Worker
 
     def server_owner_id(server_id : UInt64) : UInt64
       cache.guilds[server_id].owner_id.to_u64
+    rescue exception : KeyError
+      raise NotFoundError.new(cause: exception)
     end
 
     def server_administrator_roles_ids(server_id : UInt64) : Array(UInt64)
@@ -100,6 +106,8 @@ class Worker
       end
 
       admin_roles.map &.id.to_u64
+    rescue exception : KeyError
+      raise NotFoundError.new(cause: exception)
     end
 
     private def cache : Discord::Cache
