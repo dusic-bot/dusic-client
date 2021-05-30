@@ -4,15 +4,6 @@ class Worker
   class CommandCallExecutor
     class DonateCommand < Base
       def execute
-        if @command_call.server_id.zero?
-          reply(
-            t("commands.donate.title"),
-            t("commands.donate.errors.only_available_in_guild_channels"),
-            "danger"
-          )
-          return
-        end
-
         encoded_user = Dusic.alphabet_encode(@command_call.author_id)
         encoded_server = Dusic.alphabet_encode(@command_call.server_id)
         donation_id = "#{encoded_user}_#{encoded_server}"

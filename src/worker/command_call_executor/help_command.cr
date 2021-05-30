@@ -37,8 +37,8 @@ class Worker
       end
 
       private def find_main_command_name(name : String) : String?
-        COMMANDS_LIST.each do |main_name, aliases|
-          return main_name.to_s if aliases.includes?(name)
+        COMMANDS_LIST.each do |data|
+          return data[:name] if data[:aliases].includes?(name)
         end
 
         nil

@@ -6,24 +6,6 @@ class Worker
       ROLE_ID_OR_MENTION_REGEX = /^(?:(\d+)|<@&(\d+)>)$/
 
       def execute
-        if @command_call.server_id.zero?
-          reply(
-            t("commands.settings.title"),
-            t("commands.settings.errors.only_available_in_guild_channels"),
-            "danger"
-          )
-          return
-        end
-
-        if author_access_level < AccessLevel::ServerAdministrator
-          reply(
-            t("commands.settings.title"),
-            t("commands.settings.errors.only_available_for_administrators"),
-            "danger"
-          )
-          return
-        end
-
         if @command_call.arguments.empty?
           reply_with_current_settings
           return

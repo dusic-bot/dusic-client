@@ -1,7 +1,7 @@
 class Worker
   class CommandCallExecutor
     abstract class Base
-      def initialize(@worker : Worker, @command_call : CommandCall)
+      def initialize(@worker : Worker, @command_call : CommandCall, @command_data : CommandData? = nil)
       end
 
       abstract def execute
@@ -43,37 +43,6 @@ class Worker
         else
           false
         end
-      end
-
-      def author_access_level : AccessLevel
-        bot_owner_id = Dusic.secrets["bot_owner_id"].as_s.to_u64
-        return AccessLevel::BotOwner if @command_call.author_id == bot_owner_id
-
-        return AccessLevel::Base if @command_call.server_id.zero?
-
-        begin
-          server_owner_id = @worker.discord_client.server_owner_id(@command_call.server_id)
-          return AccessLevel::ServerOwner if @command_call.author_id == server_owner_id
-        rescue exception : DiscordClient::NotFoundError
-          Log.error(exception: exception) { "failed to fetch server owner id" }
-        end
-
-        author_roles = @command_call.author_roles_ids
-
-        begin
-          admin_roles = @worker.discord_client.server_administrator_roles_ids(@command_call.server_id)
-          return AccessLevel::ServerAdministrator if (author_roles & admin_roles).any?
-        rescue exception : DiscordClient::NotFoundError
-          Log.error(exception: exception) { "failed to fetch server admin roles" }
-        end
-
-        dj_role = server.setting.dj_role
-        return AccessLevel::ServerDj if dj_role.nil? || author_roles.includes?(dj_role)
-
-        AccessLevel::Base
-      rescue exception
-        Log.error(exception: exception) { "failed to determine access level" }
-        AccessLevel::ServerDj
       end
     end
   end

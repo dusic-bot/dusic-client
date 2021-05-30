@@ -4,15 +4,6 @@ class Worker
   class CommandCallExecutor
     class ServerCommand < Base
       def execute
-        if @command_call.server_id.zero?
-          reply(
-            t("commands.server.title"),
-            t("commands.server.errors.only_available_in_guild_channels"),
-            "danger"
-          )
-          return
-        end
-
         reply(
           t("commands.server.title"),
           t("commands.server.text.statistic", {
