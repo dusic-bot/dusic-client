@@ -103,7 +103,20 @@ class Worker
       end
 
       private def update_language_setting(value : String) : Nil
-        # TODO
+        new_language = case value
+                       when "русский", "ру", "ru", "russian"             then "ru"
+                       when "английский", "англ", "en", "eng", "english" then "en"
+                       else
+                         "ru"
+                       end
+
+        server.setting.language = new_language
+        @worker.api_client.server_save(server)
+        reply(
+          t("commands.settings.title"),
+          t("commands.settings.text.new_language", {language: new_language}),
+          "success"
+        )
       end
 
       private def update_autopause_setting(value : String) : Nil
