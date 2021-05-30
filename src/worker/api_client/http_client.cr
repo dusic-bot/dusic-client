@@ -14,6 +14,7 @@ class Worker
       @headers : HTTP::Headers = HTTP::Headers{
         "Authorization" => "Bearer #{Dusic.secrets["api"]["token"].as_s}",
         "Origin"        => "app://dusic-client",
+        "Content-Type"  => "application/json",
       }
 
       def initialize
