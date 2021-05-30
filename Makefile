@@ -5,6 +5,10 @@ default: format spec;
 format:
 	crystal tool format --check
 
+.PHONY: hierarchy
+hierarchy:
+	crystal tool hierarchy --no-color src/cli/worker.cr > tmp/hierarchy.txt
+
 .PHONY: spec
 spec:
 	crystal spec
