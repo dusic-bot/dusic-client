@@ -110,6 +110,19 @@ class Worker
       raise NotFoundError.new(cause: exception)
     end
 
+    def role_name(role_id : UInt64) : String
+      cache.roles[role_id].name
+    rescue exception : KeyError
+      raise NotFoundError.new(cause: exception)
+    end
+
+    def role_id_by_name(role_name : String) : UInt64
+      cache.roles.each do |id, r|
+        return id if r.name == role_name
+      end
+      raise NotFoundError.new
+    end
+
     private def cache : Discord::Cache
       @client.cache.not_nil!
     end
