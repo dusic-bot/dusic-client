@@ -11,5 +11,5 @@ commands:
           Length of loaded tracks: `%{total_tracks_length}`
           Amount of tracks: `%{total_tracks_amount}`
     errors:
-      only_available_in_guild_channels: |-
+      unavailable_in_dm: |-
         Statistic is only available on the servers

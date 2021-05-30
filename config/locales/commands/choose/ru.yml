@@ -4,7 +4,7 @@ commands:
     text:
       selection_canceled: Выбор аудио отменён
     errors:
-      only_available_in_guild_channels: Проигрывание музыки доступно только на серверах
+      unavailable_in_dm: Проигрывание музыки доступно только на серверах
       call_play_first: Вызовите команду `play ТЕКСТ ДЛЯ ПОИСКА` ,чтобы инициировать поиск
       nothing_selected:
         Пожалуйста, выберите аудио командой `select НОМЕР` или отмените выбор, вызвав `cancel`

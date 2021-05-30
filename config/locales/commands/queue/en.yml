@@ -8,7 +8,7 @@ commands:
         other: "`%{count}` tracks in queue"
       track_list_line: "    `%{position}`.  %{track}"
     errors:
-      only_available_in_guild_channels: |-
+      unavailable_in_dm: |-
         Playback and audio queue are only available in guilds
       could_not_load_audios: |-
         Could not load audios. Check whether arguments are correct

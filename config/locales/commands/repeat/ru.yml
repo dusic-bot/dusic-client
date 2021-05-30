@@ -8,6 +8,6 @@ commands:
         many: В очередь добавлено `%{count}` аудиозаписей
         other: В очередь добавлено `%{count}` аудиозаписей
     errors:
-      only_available_in_guild_channels: Проигрывание музыки доступно только на серверах
+      unavailable_in_dm: Проигрывание музыки доступно только на серверах
       only_available_for_dj: Данная команда доступна только пользователям с DJ-ролью
       nothing_is_playing: Сейчас ничего не играет

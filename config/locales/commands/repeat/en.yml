@@ -6,6 +6,6 @@ commands:
         one: "`%{count}` track added to queue"
         other: "`%{count}` tracks added to queue"
     errors:
-      only_available_in_guild_channels: Playback is only available in guilds
+      unavailable_in_dm: Playback is only available in guilds
       only_available_for_dj: This command can only be executed by server DJs
       nothing_is_playing: Nothing is playing

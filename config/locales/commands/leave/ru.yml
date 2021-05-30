@@ -5,7 +5,7 @@ commands:
       playback_suspended: |-
         Проигрывание было приостановлено. Вызовите `play` для возобновления проигрывания
     errors:
-      only_available_in_guild_channels: |-
+      unavailable_in_dm: |-
         Проигрывание музыки и просмотр очереди доступны только на серверах
       only_available_for_dj: |-
         Данная команда доступна только пользователям с DJ-ролью

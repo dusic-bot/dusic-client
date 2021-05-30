@@ -10,7 +10,7 @@ commands:
         other: В очереди `%{count}` аудиозаписей
       track_list_line: "    `%{position}`.  %{track}"
     errors:
-      only_available_in_guild_channels: |-
+      unavailable_in_dm: |-
         Проигрывание музыки и просмотр очереди доступны только на серверах
       could_not_load_audios: |-
         Не удалось загрузить аудиозаписи. Проверьте правильность аргументов

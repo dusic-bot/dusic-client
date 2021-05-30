@@ -7,7 +7,7 @@ commands:
         one: Removed %{count} audio
         other: Removed %{count} audios
     errors:
-      only_available_in_guild_channels: |-
+      unavailable_in_dm: |-
         Audio queue is only available in guilds
       incorrect_arguments: |-
         Check whether arguments are correct. Read more: `help remove`
