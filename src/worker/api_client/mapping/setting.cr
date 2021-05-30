@@ -6,6 +6,7 @@ class Worker
       class Setting
         include JSON::Serializable
 
+        @[JSON::Field(emit_null: true)]
         property dj_role : UInt64?
         property language : String
         property autopause : Bool
