@@ -42,7 +42,8 @@ class Worker
     end
 
     def server_save(server) : Mapping::Server
-      put_server(server)
+      new_server = put_server(server)
+      @servers[new_server.id] = new_server
     end
 
     private def get_servers : Array(Mapping::Server)
