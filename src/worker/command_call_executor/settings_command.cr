@@ -120,11 +120,42 @@ class Worker
       end
 
       private def update_autopause_setting(value : String) : Nil
-        # TODO
+        new_autopause = case value
+                        when "on", "вкл"   then true
+                        when "off", "выкл" then false
+                        else
+                          true
+                        end
+        server.setting.autopause = new_autopause
+        @worker.api_client.server_save(server)
+        reply(
+          t("commands.settings.title"),
+          t("commands.settings.text.new_autopause", {
+            autopause: new_autopause ? "ON" : "OFF",
+          }),
+          "success"
+        )
       end
 
       private def update_prefix_setting(value : String) : Nil
-        # TODO
+        new_prefix = value[0, 64]
+        if new_prefix.empty?
+          server.setting.prefix = nil
+          @worker.api_client.server_save(server)
+          reply(
+            t("commands.settings.title"),
+            t("commands.settings.text.using_default_prefix"),
+            "success"
+          )
+        else
+          server.setting.prefix = new_prefix
+          @worker.api_client.server_save(server)
+          reply(
+            t("commands.settings.title"),
+            t("commands.settings.text.new_prefix", {prefix: new_prefix}),
+            "success"
+          )
+        end
       end
 
       private def role_by_mention(value : String) : NamedTuple(name: String?, id: UInt64)?
