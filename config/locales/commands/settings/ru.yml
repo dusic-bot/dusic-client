@@ -27,11 +27,11 @@ commands:
         Бот всегда отзывается на сообщения с упоминанием
         Чтобы восстановить стандартный префикс, вызовите `@Dusic settings prefix`
     errors:
-      only_available_in_guild_channels:
+      unavailable_in_dm:
         Редактирование настроек доступно только на серверах
       unknown_setting:
         Неизвестная настройка `%{setting}`
       failed_to_find_role:
         Не удалось определить роль
-      only_available_for_administrators:
+      not_authorized:
         Изменение настроек доступно только администраторам сервера

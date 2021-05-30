@@ -11,5 +11,5 @@ commands:
           Продолжительность загруженных треков: `%{total_tracks_length}`
           Количество треков: `%{total_tracks_amount}`
     errors:
-      only_available_in_guild_channels: |-
+      unavailable_in_dm: |-
         Статистика доступна только на серверах

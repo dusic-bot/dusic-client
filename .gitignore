@@ -16,5 +16,10 @@
 /config/secrets/*.key
 
 # Ignore temp files
+/tmp/*
 /tmp/pids/*
 !/tmp/pids/.keep
+
+# Ignore log files
+/log/*
+!/log/.keep

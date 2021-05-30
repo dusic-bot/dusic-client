@@ -27,11 +27,11 @@ commands:
         Bot will always respond to mentions
         To restore default prefix call `@Dusic settings prefix`
     errors:
-      only_available_in_guild_channels:
+      unavailable_in_dm:
         Bot settings are only available in guilds
       unknown_setting:
         Unknown setting `%{setting}`
       failed_to_find_role:
         Failed to identify role
-      only_available_for_administrators:
+      not_authorized:
         Settings can be only changed by server administrators

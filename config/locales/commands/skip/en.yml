@@ -7,7 +7,7 @@ commands:
         other: Skipped %{count} audios
       nothing_is_playing: Nothing is playing 🤔
     errors:
-      only_available_in_guild_channels: |-
+      unavailable_in_dm: |-
         Playback and audio queue are only available in guilds
       incorrect_arguments: |-
         Check whether arguments are correct. Read more: `help skip`

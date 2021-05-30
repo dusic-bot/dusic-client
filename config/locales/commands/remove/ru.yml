@@ -9,7 +9,7 @@ commands:
         many: Удалены `%{count}` аудиозаписей
         other: Удалены `%{count}` аудиозаписей
     errors:
-      only_available_in_guild_channels: |-
+      unavailable_in_dm: |-
         Редактирование очереди доступно только на серверах
       incorrect_arguments: |-
         Проверьте правильность аргументов. Подробнее: `help remove`

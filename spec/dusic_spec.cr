@@ -7,6 +7,12 @@ Spectator.describe Dusic do
     it { is_expected.to eq(Dusic::Environment::Test) }
   end
 
+  describe ".env_s" do
+    subject { described_class.env_s }
+
+    it { is_expected.to eq("test") }
+  end
+
   describe ".secrets" do
     subject { described_class.secrets }
 
@@ -82,6 +88,66 @@ Spectator.describe Dusic do
       let(argument) { "ZZZZZZZZZZZZZZZZ" }
 
       it { expect { call }.to raise_error(OverflowError) }
+    end
+  end
+
+  describe ".format_seconds" do
+    subject(result) { described_class.format_seconds(argument) }
+
+    let(argument) { 0 }
+
+    it { is_expected.to eq("00:00:00") }
+
+    context "when negative value" do
+      let(argument) { -10 }
+
+      it { is_expected.to eq("-00:00:10") }
+    end
+
+    context "when seconds" do
+      let(argument) { 10 }
+
+      it { is_expected.to eq("00:00:10") }
+    end
+
+    context "when minutes" do
+      let(argument) { 610 }
+
+      it { is_expected.to eq("00:10:10") }
+    end
+
+    context "when hours" do
+      let(argument) { 36610 }
+
+      it { is_expected.to eq("10:10:10") }
+    end
+
+    context "when days" do
+      let(argument) { 90610 }
+
+      it { is_expected.to eq("25:10:10") }
+    end
+  end
+
+  describe ".ms_since" do
+    subject(result) { described_class.ms_since(argument) }
+
+    let(argument) { Time.utc }
+
+    it { is_expected.to be_a(Float64) }
+  end
+
+  describe ".color" do
+    subject(result) { described_class.color(argument) }
+
+    let(argument) { "success" }
+
+    it { is_expected.to be_a(UInt32) }
+
+    context "when not existing" do
+      let(argument) { "well" }
+
+      it { is_expected.to be_nil }
     end
   end
 end

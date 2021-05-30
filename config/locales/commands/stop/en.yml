@@ -4,7 +4,7 @@ commands:
     text:
       playback_fully_stopped: Playback was fully stopped
     errors:
-      only_available_in_guild_channels: |-
+      unavailable_in_dm: |-
         Playback and audio queue are only available in guilds
       only_available_for_dj: |-
         This command can only be executed by server DJs
