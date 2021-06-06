@@ -1,9 +1,9 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
     # NOTE: Pseudo-command
-    class UnknownCommand < Base
+    class UnknownCommand < Command
       def execute
         reply(
           t("commands.unknown.title"),

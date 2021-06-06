@@ -1,9 +1,9 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
     # NOTE: Pseudo-command
-    class UnavailableInDmCommand < Base
+    class UnavailableInDmCommand < Command
       def execute
         command_name = @command_data.not_nil![:name]
         reply(

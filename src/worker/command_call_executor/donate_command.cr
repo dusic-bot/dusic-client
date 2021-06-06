@@ -1,8 +1,8 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
-    class DonateCommand < Base
+    class DonateCommand < Command
       def execute
         encoded_user = Dusic.alphabet_encode(@command_call.author_id)
         encoded_server = Dusic.alphabet_encode(@command_call.server_id)

@@ -1,8 +1,8 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
-    class ShuffleCommand < Base
+    class ShuffleCommand < Command
       def execute
         Log.debug { "Command #{self.class}" }
         # TODO

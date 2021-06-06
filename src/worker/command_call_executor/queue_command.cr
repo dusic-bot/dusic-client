@@ -1,8 +1,8 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
-    class QueueCommand < Base
+    class QueueCommand < Command
       def execute
         Log.debug { "Command #{self.class}" }
         # TODO

@@ -1,8 +1,8 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
-    class HelpCommand < Base
+    class HelpCommand < Command
       HELP_SECTIONS = [
         {name: "_question_mark", inline: false},
         {name: "help", inline: false},

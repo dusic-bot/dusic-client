@@ -10,7 +10,7 @@ class Worker
       ServerOwner
       BotOwner
     end
-    alias CommandData = NamedTuple(name: String, aliases: Array(String), allowed_in_dm: Bool, required_access_level: AccessLevel, callable: Base.class)
+    alias CommandData = NamedTuple(name: String, aliases: Array(String), allowed_in_dm: Bool, required_access_level: AccessLevel, callable: Command.class)
 
     Log = Worker::Log.for("command_call_executor")
 

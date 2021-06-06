@@ -1,6 +1,6 @@
 class Worker
   class CommandCallExecutor
-    abstract class Base
+    abstract class Command
       def initialize(@worker : Worker, @command_call : CommandCall, @command_data : CommandData? = nil)
       end
 

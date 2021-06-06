@@ -1,8 +1,8 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
-    class AboutCommand < Base
+    class AboutCommand < Command
       def execute
         reply(
           t("commands.about.title"),
