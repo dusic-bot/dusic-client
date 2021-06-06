@@ -42,11 +42,7 @@ class Worker
       end
 
       private def premium? : Bool
-        if donation = server.last_donation
-          Time.utc <= donation.date + 31.day
-        else
-          false
-        end
+        server.premium?
       end
     end
   end
