@@ -14,6 +14,7 @@ class Worker
   @message_handler : MessageHandler? = nil
   @command_call_handler : CommandCallHandler? = nil
   @command_call_executor : CommandCallExecutor? = nil
+  @audio_players_storage : AudioPlayersStorage? = nil
 
   getter shard_id : Int32
   getter shard_num : Int32
@@ -24,6 +25,7 @@ class Worker
     @message_handler = MessageHandler.new(self)
     @command_call_handler = CommandCallHandler.new(self)
     @command_call_executor = CommandCallExecutor.new(self)
+    @audio_players_storage = AudioPlayersStorage.new(self)
   end
 
   def run : Nil
@@ -58,5 +60,9 @@ class Worker
 
   def command_call_executor : CommandCallExecutor
     @command_call_executor.not_nil!
+  end
+
+  def audio_players_storage : AudioPlayersStorage
+    @audio_players_storage.not_nil!
   end
 end

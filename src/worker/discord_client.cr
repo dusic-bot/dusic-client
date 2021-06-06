@@ -164,6 +164,7 @@ class Worker
 
     private def voice_server_update_handler(payload : Discord::Gateway::VoiceServerUpdatePayload) : Nil
       Log.debug { "Voice server update" }
+      @worker.audio_players_storage.handle_voice_server_update(payload.guild_id.to_u64, payload.token, payload.endpoint)
     end
 
     private def update_status : Nil
