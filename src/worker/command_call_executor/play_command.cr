@@ -40,7 +40,20 @@ class Worker
           return
         end
 
-        title, audios = titled_audios_to_add(manager)
+        title : String? = nil
+        audios =
+          case manager
+          when Manager::Asset
+            asset = find_asset
+            asset.nil? ? [] of AudioPlayer::Audio : [asset]
+          when Manager::Youtube
+            reply(t("commands.play.title"), t("commands.play.errors.yt_unavailable"), "danger")
+            return
+          when Manager::Vk
+            [] of AudioPlayer::Audio # TODO
+          else
+            [] of AudioPlayer::Audio
+          end
 
         if audios.empty?
           reply(t("commands.play.title"), t("commands.play.text.nothing_found"), "warning")
@@ -118,24 +131,6 @@ class Worker
         options = @command_call.options
         if options.has_key?("now")
           options["first"] = options["skip"] = options["instant"] = nil
-        end
-      end
-
-      private def titled_audios_to_add(manager) : Tuple(String?, AudioPlayer::AudioArray)
-        case manager
-        when Manager::Asset
-          asset = find_asset
-          audios = asset.nil? ? [] of AudioPlayer::Audio : [asset]
-          {nil, audios}
-        when Manager::Youtube
-          audios = [] of AudioPlayer::Audio # TODO
-          {nil, audios}
-        when Manager::Vk
-          audios = [] of AudioPlayer::Audio # TODO
-          {nil, audios}
-        else
-          audios = [] of AudioPlayer::Audio
-          {nil, audios}
         end
       end
 
