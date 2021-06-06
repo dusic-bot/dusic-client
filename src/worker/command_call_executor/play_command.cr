@@ -22,29 +22,58 @@ class Worker
       end
 
       def execute
-        # TODO: Check whether queue is full
-
-        manager = determine_manager(@command_call.arguments, @command_call.options)
-        apply_option_aliases!(@command_call.options)
+        manager = determine_manager
+        apply_option_aliases!
 
         if manager == Manager::None
-          # TODO: resume playback if there is something in queue
+          if audio_player.queue.empty?
+            reply(t("commands.play.title"), t("audio_player.text.queue_is_empty"), "warning")
+          else
+            resume_playback
+          end
+
           return
         end
 
-        audios = audios_to_add(manager, @command_call.arguments)
-
-        if audios.empty?
-          # TODO: "Nothing found!"
+        if audio_player.queue.full?
+          reply(t("commands.play.title"), t("audio_player.text.queue_is_full"), "warning")
+          return
         end
 
-        # TODO: add audios to queue
+        audios = audios_to_add(manager)
+
+        if audios.empty?
+          reply(t("commands.play.title"), t("commands.play.text.nothing_found"), "warning")
+          return
+        end
+
+        space_left = audio_player.queue.limit - audio_player.queue.size
+        if audios.size > space_left
+          audios = audios.first(space_left)
+          reply(t("commands.play.title"), t("audio_player.text.queue_limit_hit"), "warning")
+        end
+
+        audios.shuffle! if @command_call.options.has_key?("shuffle")
+
+        if @command_call.options.has_key?("skip")
+          # TODO: skip current track
+        end
+
+        if @command_call.options.has_key?("first")
+          audio_player.queue.unshift(audios)
+        else
+          audio_player.queue.push(audios)
+        end
+
         # TODO: send reply
 
-        # TODO: resume playback
+        resume_playback
       end
 
-      private def determine_manager(arguments, options) : Manager
+      private def determine_manager : Manager
+        arguments = @command_call.arguments
+        options = @command_call.options
+
         if arguments.empty?
           Manager::None
         elsif options.has_key?("asset")
@@ -85,30 +114,31 @@ class Worker
         !vk_url.nil?
       end
 
-      private def apply_option_aliases!(options) : Nil
+      private def apply_option_aliases! : Nil
+        options = @command_call.options
         if options.has_key?("now")
           options["first"] = options["skip"] = options["instant"] = nil
         end
       end
 
-      private def audios_to_add(manager, arguments) : Array(AudioPlayer::Audio)
-        return [] of AudioPlayer::Audio # TODO
-
+      private def audios_to_add(manager) : AudioPlayer::AudioArray
         case manager
-        when Manager::None
-          [] of AudioPlayer::Audio
         when Manager::Asset
-          [find_asset(arguments)]
-          # TODO
+          asset = find_asset
+          asset.nil? ? [] of AudioPlayer::Audio : [asset]
         when Manager::Youtube
-          # TODO: Youtube support
+          [] of AudioPlayer::Audio # TODO
         when Manager::Vk
-          # TODO
+          [] of AudioPlayer::Audio # TODO
+        else
+          [] of AudioPlayer::Audio
         end
       end
 
-      private def find_asset(arguments) : AudioPlayer::AssetAudio?
-        case arguments.join("_").downcase
+      private def find_asset : AudioPlayer::AssetAudio?
+        name = @command_call.arguments.join("_").downcase
+
+        case name
         when "rickroll", "rick_roll"
           ASSETS_LIST[:rickroll]
         when "dj_watermelon", "dj", "watermelon", "arbuz"
@@ -122,6 +152,10 @@ class Worker
         else
           nil
         end
+      end
+
+      private def resume_playback : Nil
+        audio_player.play # TODO
       end
     end
   end
