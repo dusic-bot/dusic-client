@@ -40,7 +40,7 @@ class Worker
           return
         end
 
-        audios = audios_to_add(manager)
+        title, audios = titled_audios_to_add(manager)
 
         if audios.empty?
           reply(t("commands.play.title"), t("commands.play.text.nothing_found"), "warning")
@@ -65,7 +65,7 @@ class Worker
           audio_player.queue.push(audios)
         end
 
-        # TODO: send reply
+        reply_to_added_audios(audios, title)
 
         resume_playback
       end
@@ -121,17 +121,21 @@ class Worker
         end
       end
 
-      private def audios_to_add(manager) : AudioPlayer::AudioArray
+      private def titled_audios_to_add(manager) : Tuple(String?, AudioPlayer::AudioArray)
         case manager
         when Manager::Asset
           asset = find_asset
-          asset.nil? ? [] of AudioPlayer::Audio : [asset]
+          audios = asset.nil? ? [] of AudioPlayer::Audio : [asset]
+          {nil, audios}
         when Manager::Youtube
-          [] of AudioPlayer::Audio # TODO
+          audios = [] of AudioPlayer::Audio # TODO
+          {nil, audios}
         when Manager::Vk
-          [] of AudioPlayer::Audio # TODO
+          audios = [] of AudioPlayer::Audio # TODO
+          {nil, audios}
         else
-          [] of AudioPlayer::Audio
+          audios = [] of AudioPlayer::Audio
+          {nil, audios}
         end
       end
 
@@ -156,6 +160,30 @@ class Worker
 
       private def resume_playback : Nil
         audio_player.play # TODO
+      end
+
+      private def reply_to_added_audios(audios : AudioPlayer::AudioArray, title : String? = nil) : Nil
+        if audios.empty?
+          reply(t("commands.play.title"), t("commands.play.text.nothing_found"), "warning")
+        elsif audios.size == 1
+          reply(
+            t("audio_player.title"),
+            t("audio_player.text.audio_added", {
+              artist:   audios.first.artist,
+              title:    audios.first.title,
+              duration: Dusic.format_seconds(audios.first.duration),
+            }),
+            "success"
+          )
+        elsif title
+          reply(
+            t("audio_player.title"),
+            t("audio_player.text.audio_list_added", {title: title}, count: audios.size),
+            "success"
+          )
+        else
+          reply(t("audio_player.title"), t("audio_player.text.audios_added", count: audios.size), "success")
+        end
       end
     end
   end
