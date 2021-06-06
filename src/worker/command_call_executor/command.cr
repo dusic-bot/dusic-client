@@ -33,6 +33,10 @@ class Worker
         @worker.api_client.server(@command_call.server_id)
       end
 
+      private def audio_player : AudioPlayer
+        @worker.audio_players_storage.audio_player(@command_call.server_id)
+      end
+
       private def prefix : String
         server.setting.prefix || Dusic.secrets["default_prefix"].as_s
       end
