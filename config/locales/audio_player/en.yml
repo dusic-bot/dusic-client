@@ -24,9 +24,11 @@ audio_player:
       one: Added `%{count}` audio to queue
       other: Added `%{count}` audios to queue
     nothing_found: Nothing found :(
-    audio_queue_full: Audio queue is full. Call `remove queue` command to clean it
+    queue_is_full: |-
+      Audio queue is full. Use `remove` command to remove audios. Read more: `help remove`
     queue_limit_hit: >-
-      Some audios were not added to queue. Call `remove queue` to clean audio queue
+      Some audios were not added to queue due to the queue size limit.
+      Use `remove` command to clean it. Read more: `help remove`
     time_limit_title: Listen time limit
     time_limit_description: >-
       Currently playback time is limited to 30 minutes per day. This restriction
