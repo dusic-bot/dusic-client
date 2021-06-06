@@ -7,7 +7,7 @@ class Worker
 
     def initialize(@worker : Worker)
       @audio_players = Hash(UInt64, AudioPlayer).new do |hash, key|
-        hash[key] = AudioPlayer.new(@worker)
+        hash[key] = AudioPlayer.new(@worker, key)
       end
     end
 
