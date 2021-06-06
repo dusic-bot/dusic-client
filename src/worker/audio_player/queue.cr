@@ -1,5 +1,8 @@
 class Worker
   class AudioPlayer
+    PREMIUM_MAXIMUM_SIZE = 10_000
+    MAXIMUM_SIZE         =  2_000
+
     class Queue
       def initialize(@worker : Worker, @server_id : UInt64)
         @queue = [] of Audio
@@ -13,12 +16,12 @@ class Worker
         size >= limit
       end
 
-      def size : UInt32
-        @queue.size.to_u32
+      def size : Int32
+        @queue.size
       end
 
-      def limit : UInt32
-        server.premium? ? 10_000_u32 : 2_000_u32
+      def limit : Int32
+        server.premium? ? PREMIUM_MAXIMUM_SIZE : MAXIMUM_SIZE
       end
 
       def unshift(audios : Array(Audio)) : Nil
@@ -28,6 +31,10 @@ class Worker
 
       def push(audios : Array(Audio)) : Nil
         @queue.concat(audios)
+      end
+
+      def [](start : Int, count : Int) : Array(Audio)
+        @queue[start, count]
       end
 
       private def server : ApiClient::Mapping::Server
