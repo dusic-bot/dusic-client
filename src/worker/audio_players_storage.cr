@@ -11,8 +11,8 @@ class Worker
       end
     end
 
-    def audio_player(guild_id : UInt64) : AudioPlayer
-      @audio_players[guild_id]
+    def audio_player(server_id : UInt64) : AudioPlayer
+      @audio_players[server_id]
     end
 
     def stop_all : Nil
@@ -27,8 +27,8 @@ class Worker
     end
 
     # Pass Discord voice server update event to audio player
-    def handle_voice_server_update(guild_id : UInt64, token : String, endpoint : String) : Nil
-      audio_player(guild_id).handle_voice_server_update(token, endpoint)
+    def handle_voice_server_update(server_id : UInt64, token : String, endpoint : String) : Nil
+      audio_player(server_id).handle_voice_server_update(token, endpoint)
     end
   end
 end

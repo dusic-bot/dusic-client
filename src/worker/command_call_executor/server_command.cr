@@ -7,7 +7,7 @@ class Worker
         reply(
           t("commands.server.title"),
           t("commands.server.text.statistic", {
-            guild_id:            @command_call.server_id,
+            server_id:           @command_call.server_id,
             total_tracks_length: Dusic.format_seconds(server.statistic.tracks_length),
             total_tracks_amount: server.statistic.tracks_amount,
             daily_tracks_length: Dusic.format_seconds(server.today_statistic.tracks_length),
