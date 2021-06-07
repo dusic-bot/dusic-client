@@ -41,8 +41,7 @@ class Worker
           return
         end
 
-        title : String? = nil
-        audios : Array(AudioPlayer::Audio)? = fetch_audios(manager)
+        audios, title = fetch_audios_and_title(manager)
         return if audios.nil?
 
         if audios.empty?
@@ -171,32 +170,37 @@ class Worker
         end
       end
 
-      private def fetch_audios(manager : Manager) : Array(AudioPlayer::Audio)?
+      private def fetch_audios_and_title(manager : Manager) : Tuple(Array(AudioPlayer::Audio)?, String?)
         case manager
         when Manager::Asset   then fetch_asset_audios
         when Manager::Youtube then fetch_yt_audios
         when Manager::Vk      then fetch_vk_audios
-        else                       [] of AudioPlayer::Audio
+        else                       {[] of AudioPlayer::Audio, nil}
         end
       end
 
-      private def fetch_asset_audios : Array(AudioPlayer::Audio)?
+      private def fetch_asset_audios : Tuple(Array(AudioPlayer::Audio)?, String?)
         array = [] of AudioPlayer::Audio
         asset = find_asset
         if asset
           array << asset
         end
-        array
+        {array, nil}
       end
 
-      private def fetch_yt_audios : Array(AudioPlayer::Audio)?
+      private def fetch_yt_audios : Tuple(Array(AudioPlayer::Audio)?, String?)
         reply(t("commands.play.title"), t("commands.play.errors.yt_unavailable"), "danger")
-        nil
+        {nil, nil}
       end
 
-      private def fetch_vk_audios : Array(AudioPlayer::Audio)?
+      private def fetch_vk_audios : Tuple(Array(AudioPlayer::Audio)?, String?)
         argument = @command_call.arguments.join(" ")
         audio_request = @worker.api_client.vk_audios(argument)
+
+        title : String? = nil
+        if audio_request.response.size == 1 && audio_request.response.first.is_a?(ApiClient::Mapping::AudioList)
+          title = audio_request.response.first.title
+        end
 
         audios = [] of AudioPlayer::Audio
         audio_request.response.map do |el|
@@ -209,15 +213,13 @@ class Worker
           end
         end
 
-        if audio_request.type == "find"
-          if @command_call.options.has_key?("instant")
-            audios[0, 1]
-          else
-            init_vk_selection(audios)
-            nil
-          end
+        if audio_request.type == "find" && @command_call.options.has_key?("instant")
+          {audios[0, 1], title}
+        elsif audio_request.type == "find"
+          init_vk_selection(audios)
+          {nil, title}
         else
-          audios
+          {audios, title}
         end
       end
 
