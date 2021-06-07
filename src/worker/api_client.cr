@@ -46,6 +46,10 @@ class Worker
       @servers[new_server.id] = new_server
     end
 
+    def vk_audios(query : String) : Mapping::AudioRequest
+      get_audios("vk", query, "auto")
+    end
+
     private def get_servers : Array(Mapping::Server)
       response = @http_client.get("discord_servers?shard_id=#{@worker.shard_id}&shard_num=#{@worker.shard_num}")
       Array(Mapping::Server).from_json(response)
