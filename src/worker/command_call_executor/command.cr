@@ -11,7 +11,7 @@ class Worker
         description : String,
         color_key : String? = nil,
         fields : Array(DiscordClient::EmbedFieldData) = Array(DiscordClient::EmbedFieldData).new
-      ) : Nil
+      ) : UInt64?
         color = color_key ? Dusic.color(color_key) : nil
         footer_text = "#{Dusic.ms_since(@command_call.call_time)}ms"
         @worker.discord_client.send_embed(@command_call.channel_id, title, description, footer_text, color, fields)
