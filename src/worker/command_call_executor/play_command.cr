@@ -5,6 +5,7 @@ class Worker
     class PlayCommand < Command
       YOUTUBE_VIDEO_ID_REGEX = /(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be.com\/\S*(?:watch|embed)(?:(?:(?=\/[^&\s\?]+(?!\S))\/)|(?:\S*v=|v\/)))([^&\s\?]+)/i
       VK_URL_REGEX           = /(?:https?:\/\/)?(?:www\.)?(?:vk|vkontakte)\.(?:com|ru)\//i
+      SELECTION_SIZE         = 10
 
       ASSETS_LIST = {
         rickroll:        AudioPlayer::AssetAudio.new("rickroll", "Rick Astley", "Never Gonna Give You Up", 211_u32),
@@ -41,19 +42,8 @@ class Worker
         end
 
         title : String? = nil
-        audios =
-          case manager
-          when Manager::Asset
-            asset = find_asset
-            asset.nil? ? [] of AudioPlayer::Audio : [asset]
-          when Manager::Youtube
-            reply(t("commands.play.title"), t("commands.play.errors.yt_unavailable"), "danger")
-            return
-          when Manager::Vk
-            [] of AudioPlayer::Audio # TODO
-          else
-            [] of AudioPlayer::Audio
-          end
+        audios : Array(AudioPlayer::Audio)? = fetch_audios(manager)
+        return if audios.nil?
 
         if audios.empty?
           reply(t("commands.play.title"), t("commands.play.text.nothing_found"), "warning")
@@ -179,6 +169,76 @@ class Worker
         else
           reply(t("audio_player.title"), t("audio_player.text.audios_added", count: audios.size), "success")
         end
+      end
+
+      private def fetch_audios(manager : Manager) : Array(AudioPlayer::Audio)?
+        case manager
+        when Manager::Asset   then fetch_asset_audios
+        when Manager::Youtube then fetch_yt_audios
+        when Manager::Vk      then fetch_vk_audios
+        else                       [] of AudioPlayer::Audio
+        end
+      end
+
+      private def fetch_asset_audios : Array(AudioPlayer::Audio)?
+        array = [] of AudioPlayer::Audio
+        asset = find_asset
+        if asset
+          array << asset
+        end
+        array
+      end
+
+      private def fetch_yt_audios : Array(AudioPlayer::Audio)?
+        reply(t("commands.play.title"), t("commands.play.errors.yt_unavailable"), "danger")
+        nil
+      end
+
+      private def fetch_vk_audios : Array(AudioPlayer::Audio)?
+        argument = @command_call.arguments.join(" ")
+        audio_request = @worker.api_client.vk_audios(argument)
+
+        audios = [] of AudioPlayer::Audio
+        audio_request.response.map do |el|
+          el.is_a?(ApiClient::Mapping::Audio) ? el : el.audios
+        end.flatten.each do |el|
+          manager = el.manager
+          id = el.id
+          if manager && id
+            audios << AudioPlayer::RemoteAudio.new(manager, id, el.artist, el.title, el.duration)
+          end
+        end
+
+        if audio_request.type == "find"
+          if @command_call.options.has_key?("instant")
+            audios[0, 1]
+          else
+            init_vk_selection(audios)
+            nil
+          end
+        else
+          audios
+        end
+      end
+
+      private def init_vk_selection(audios) : Nil
+        body = String::Builder.new
+        if audios.empty?
+          body << t("commands.play.text.nothing_found")
+        else
+          audios.first(SELECTION_SIZE).each_with_index(1) do |audio, index|
+            body << t("commands.play.text.find_line", {
+              index:    index,
+              artist:   audio.artist,
+              title:    audio.title,
+              duration: Dusic.format_seconds(audio.duration),
+            }) << "\n"
+          end
+          body << "\n" << t("commands.play.text.find_footer")
+        end
+
+        find_message_id = reply(t("commands.play.title"), body.to_s, "success")
+        # TODO: Create selection
       end
     end
   end
