@@ -3,7 +3,7 @@ require "./command"
 class Worker
   class CommandCallExecutor
     class RemoveCommand < Command
-      def execute
+      def execute : Nil
         if audio_player.queue.empty?
           reply(t("commands.remove.title"), t("commands.remove.text.audio_queue_is_empty"), "success")
           return

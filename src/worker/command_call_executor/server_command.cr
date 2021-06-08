@@ -3,7 +3,7 @@ require "./command"
 class Worker
   class CommandCallExecutor
     class ServerCommand < Command
-      def execute
+      def execute : Nil
         reply(
           t("commands.server.title"),
           t("commands.server.text.statistic", {

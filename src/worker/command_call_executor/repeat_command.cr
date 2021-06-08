@@ -3,7 +3,7 @@ require "./command"
 class Worker
   class CommandCallExecutor
     class RepeatCommand < Command
-      def execute
+      def execute : Nil
         space_left = audio_player.queue.limit - audio_player.queue.size
         if space_left <= 0
           reply(t("audio_player.title"), t("audio_player.text.audio_queue_full"), "danger")

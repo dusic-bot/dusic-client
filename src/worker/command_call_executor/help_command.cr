@@ -25,7 +25,7 @@ class Worker
         {name: "settings", inline: false},
       ]
 
-      def execute
+      def execute : Nil
         argument = @command_call.arguments.first? || ""
         argument = argument.strip.downcase
         if name = find_main_command_name(argument)

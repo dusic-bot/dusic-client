@@ -5,7 +5,7 @@ class Worker
     class QueueCommand < Command
       DISPLAYED_COUNT = 10
 
-      def execute
+      def execute : Nil
         if audio_player.queue.empty?
           reply(t("commands.queue.title"), t("commands.queue.text.audio_queue_is_empty"), "success")
           return

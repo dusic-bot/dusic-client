@@ -5,7 +5,7 @@ class Worker
     class SettingsCommand < Command
       ROLE_ID_OR_MENTION_REGEX = /^(?:(\d+)|<@&(\d+)>)$/
 
-      def execute
+      def execute : Nil
         if @command_call.arguments.empty?
           reply_with_current_settings
           return

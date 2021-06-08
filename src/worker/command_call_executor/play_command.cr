@@ -22,7 +22,7 @@ class Worker
         Vk
       end
 
-      def execute
+      def execute : Nil
         manager = determine_manager
         apply_option_aliases!
 

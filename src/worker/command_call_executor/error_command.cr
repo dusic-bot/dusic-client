@@ -4,7 +4,7 @@ class Worker
   class CommandCallExecutor
     # NOTE: Pseudo-command
     class ErrorCommand < Command
-      def execute
+      def execute : Nil
         prefix_local : String = begin
           prefix
         rescue exception

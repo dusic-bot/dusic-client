@@ -3,7 +3,7 @@ require "./command"
 class Worker
   class CommandCallExecutor
     class ShuffleCommand < Command
-      def execute
+      def execute : Nil
         audio_player.queue.shuffle
 
         reply(t("commands.shuffle.title"), t("commands.shuffle.text.queue_shuffled"), "success")

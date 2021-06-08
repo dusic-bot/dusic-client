@@ -3,7 +3,7 @@ require "./command"
 class Worker
   class CommandCallExecutor
     class AboutCommand < Command
-      def execute
+      def execute : Nil
         reply(
           t("commands.about.title"),
           t("commands.about.text", {version: Dusic::VERSION, shard: @worker.shard_id}),
