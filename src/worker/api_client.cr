@@ -47,6 +47,7 @@ class Worker
     end
 
     def vk_audios(query : String) : Mapping::AudioRequest
+      # TODO: Caching?
       get_audios("vk", query, "auto")
     end
 

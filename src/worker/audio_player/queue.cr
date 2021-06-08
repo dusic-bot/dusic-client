@@ -37,6 +37,14 @@ class Worker
         @queue[start, count]
       end
 
+      def clear : Nil
+        @queue.clear
+      end
+
+      def delete_at(range : Range) : Nil
+        @queue.delete_at(range)
+      end
+
       private def server : ApiClient::Mapping::Server
         @worker.api_client.server(@server_id)
       end
