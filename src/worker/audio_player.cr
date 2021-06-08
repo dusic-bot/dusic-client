@@ -16,6 +16,11 @@ class Worker
       # TODO
     end
 
+    def skip
+      Log.debug { "Skip" }
+      # TODO
+    end
+
     def stop
       Log.debug { "Stop" }
       # TODO

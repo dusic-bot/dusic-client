@@ -30,7 +30,7 @@ class Worker
           if audio_player.queue.empty?
             reply(t("commands.play.title"), t("audio_player.text.queue_is_empty"), "warning")
           else
-            resume_playback
+            audio_player.play
           end
 
           return
@@ -58,7 +58,7 @@ class Worker
         audios.shuffle! if @command_call.options.has_key?("shuffle")
 
         if @command_call.options.has_key?("skip")
-          # TODO: skip current track
+          audio_player.skip
         end
 
         if @command_call.options.has_key?("first")
@@ -69,7 +69,7 @@ class Worker
 
         reply_to_added_audios(audios, title)
 
-        resume_playback
+        audio_player.play
       end
 
       private def determine_manager : Manager
@@ -140,10 +140,6 @@ class Worker
         else
           nil
         end
-      end
-
-      private def resume_playback : Nil
-        audio_player.play # TODO
       end
 
       private def reply_to_added_audios(audios : AudioPlayer::AudioArray, title : String? = nil) : Nil
