@@ -45,6 +45,10 @@ class Worker
         @queue.delete_at(range)
       end
 
+      def shuffle : Nil
+        @queue.shuffle!
+      end
+
       private def server : ApiClient::Mapping::Server
         @worker.api_client.server(@server_id)
       end
