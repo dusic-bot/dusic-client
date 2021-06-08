@@ -6,22 +6,24 @@ class Worker
     alias AudioArray = Array(Audio) | Array(AssetAudio) | Array(RemoteAudio)
 
     getter queue : Queue
+    getter current_audio : Audio?
 
     def initialize(@worker : Worker, @server_id : UInt64)
       @queue = Queue.new(@worker, @server_id)
+      @current_audio = nil
     end
 
-    def play
+    def play : Nil
       Log.debug { "Play" }
       # TODO
     end
 
-    def skip
+    def skip : Nil
       Log.debug { "Skip" }
       # TODO
     end
 
-    def stop
+    def stop : Nil
       Log.debug { "Stop" }
       # TODO
     end
