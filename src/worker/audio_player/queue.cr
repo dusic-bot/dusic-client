@@ -33,6 +33,14 @@ class Worker
         @queue.concat(audios)
       end
 
+      def shift(n : Int) : Array(Audio)
+        @queue.shift(n)
+      end
+
+      def pop(n : Int) : Array(Audio)
+        @queue.pop(n)
+      end
+
       def [](start : Int, count : Int) : Array(Audio)
         @queue[start, count]
       end
