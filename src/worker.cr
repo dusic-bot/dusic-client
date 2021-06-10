@@ -13,6 +13,7 @@ class Worker
     "command_call_handler",
     "command_call_executor",
     "audio_players_storage",
+    "audio_selections_storage",
   ]
 
   @is_running : Bool = false

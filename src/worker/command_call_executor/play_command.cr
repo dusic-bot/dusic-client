@@ -219,12 +219,14 @@ class Worker
         end
       end
 
-      private def init_vk_selection(audios) : Nil
+      private def init_vk_selection(audios : Array(AudioPlayer::Audio)) : Nil
         body = String::Builder.new
-        if audios.empty?
+        selection_audios = audios.first(SELECTION_SIZE)
+
+        if selection_audios.empty?
           body << t("commands.play.text.nothing_found")
         else
-          audios.first(SELECTION_SIZE).each_with_index(1) do |audio, index|
+          selection_audios.each_with_index(1) do |audio, index|
             body << t("commands.play.text.find_line", {
               index:    index,
               artist:   audio.artist,
@@ -236,7 +238,14 @@ class Worker
         end
 
         find_message_id = reply(t("commands.play.title"), body.to_s, "success")
-        # TODO: Create selection
+
+        audio_selection = AudioSelection.new(
+          @command_call.server_id,
+          @command_call.author_id,
+          find_message_id,
+          selection_audios
+        )
+        @worker.audio_selections_storage[@command_call.server_id, @command_call.author_id] = audio_selection
       end
     end
   end
