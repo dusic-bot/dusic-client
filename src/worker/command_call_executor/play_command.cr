@@ -242,6 +242,7 @@ class Worker
         audio_selection = AudioSelection.new(
           @command_call.server_id,
           @command_call.author_id,
+          @command_call.channel_id,
           find_message_id,
           selection_audios
         )
