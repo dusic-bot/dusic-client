@@ -84,6 +84,12 @@ class Worker
       nil
     end
 
+    def delete_message(channel_id : UInt64, message_id : UInt64) : Nil
+      @client.delete_message(channel_id, message_id)
+    rescue exception : Discord::CodeException
+      Log.error(exception: exception) { "Can not delete message##{channel_id}" }
+    end
+
     def server_name(server_id : UInt64) : String
       cache.guilds[server_id].name
     rescue exception : KeyError
