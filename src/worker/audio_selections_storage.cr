@@ -18,5 +18,9 @@ class Worker
     def []=(server_id : UInt64, user_id : UInt64, audio_selection : AudioSelection) : AudioSelection
       @audio_selections[server_id][user_id] = audio_selection
     end
+
+    def delete(server_id : UInt64, user_id : UInt64) : AudioSelection?
+      @audio_selections[server_id].delete(user_id)
+    end
   end
 end
