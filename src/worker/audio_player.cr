@@ -15,17 +15,17 @@ class Worker
 
     def play : Nil
       Log.debug { "Play" }
-      # TODO
+      # TODO: start playing
     end
 
     def skip : Nil
       Log.debug { "Skip" }
-      # TODO
+      # TODO: skip current track
     end
 
-    def stop : Nil
+    def stop(preserve_current : Bool = false) : Nil
       Log.debug { "Stop" }
-      # TODO
+      # TODO: skip current track unless `preserve_current`; stop playback
     end
 
     def handle_voice_server_update(token : String, endpoint : String) : Nil
