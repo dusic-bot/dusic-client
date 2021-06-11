@@ -1,10 +1,10 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
     # NOTE: Pseudo-command
-    class ErrorCommand < Base
-      def execute
+    class ErrorCommand < Command
+      def execute : Nil
         prefix_local : String = begin
           prefix
         rescue exception

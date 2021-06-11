@@ -6,24 +6,31 @@ require "./worker/*"
 class Worker
   Log = ::Log.for("worker")
 
+  SUBSYSTEMS = [
+    "api_client",
+    "discord_client",
+    "message_handler",
+    "command_call_handler",
+    "command_call_executor",
+    "audio_players_storage",
+    "audio_selections_storage",
+  ]
+
   @is_running : Bool = false
 
   @bot_owner_id : UInt64 = Dusic.secrets["bot_owner_id"].as_s.to_u64
 
-  @discord_client : DiscordClient? = nil
-  @message_handler : MessageHandler? = nil
-  @command_call_handler : CommandCallHandler? = nil
-  @command_call_executor : CommandCallExecutor? = nil
+  {% for subsystem in SUBSYSTEMS %}
+    @{{subsystem.id}} : {{subsystem.camelcase.id}}? = nil
+  {% end %}
 
   getter shard_id : Int32
   getter shard_num : Int32
 
   def initialize(@shard_id : Int32, @shard_num : Int32)
-    @api_client = ApiClient.new(self)
-    @discord_client = DiscordClient.new(self)
-    @message_handler = MessageHandler.new(self)
-    @command_call_handler = CommandCallHandler.new(self)
-    @command_call_executor = CommandCallExecutor.new(self)
+    {% for subsystem in SUBSYSTEMS %}
+      @{{subsystem.id}} = {{subsystem.camelcase.id}}.new(self)
+    {% end %}
   end
 
   def run : Nil
@@ -40,23 +47,9 @@ class Worker
     @is_running = false
   end
 
-  def api_client : ApiClient
-    @api_client.not_nil!
-  end
-
-  def discord_client : DiscordClient
-    @discord_client.not_nil!
-  end
-
-  def message_handler : MessageHandler
-    @message_handler.not_nil!
-  end
-
-  def command_call_handler : CommandCallHandler
-    @command_call_handler.not_nil!
-  end
-
-  def command_call_executor : CommandCallExecutor
-    @command_call_executor.not_nil!
-  end
+  {% for subsystem in SUBSYSTEMS %}
+    def {{subsystem.id}} : {{subsystem.camelcase.id}}
+      @{{subsystem.id}}.not_nil!
+    end
+  {% end %}
 end

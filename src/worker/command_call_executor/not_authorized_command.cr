@@ -1,10 +1,10 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
     # NOTE: Pseudo-command
-    class NotAuthorizedCommand < Base
-      def execute
+    class NotAuthorizedCommand < Command
+      def execute : Nil
         command_name = @command_data.not_nil![:name]
         reply(
           t("commands.#{command_name}.title"),

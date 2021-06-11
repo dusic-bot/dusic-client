@@ -1,11 +1,12 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
-    class ShuffleCommand < Base
-      def execute
-        Log.debug { "Command #{self.class}" }
-        # TODO
+    class ShuffleCommand < Command
+      def execute : Nil
+        audio_player.queue.shuffle
+
+        reply(t("commands.shuffle.title"), t("commands.shuffle.text.queue_shuffled"), "success")
       end
     end
   end

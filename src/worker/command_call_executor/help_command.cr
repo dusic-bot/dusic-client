@@ -1,8 +1,8 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
-    class HelpCommand < Base
+    class HelpCommand < Command
       HELP_SECTIONS = [
         {name: "_question_mark", inline: false},
         {name: "help", inline: false},
@@ -25,7 +25,7 @@ class Worker
         {name: "settings", inline: false},
       ]
 
-      def execute
+      def execute : Nil
         argument = @command_call.arguments.first? || ""
         argument = argument.strip.downcase
         if name = find_main_command_name(argument)

@@ -10,7 +10,7 @@ class Worker
       ServerOwner
       BotOwner
     end
-    alias CommandData = NamedTuple(name: String, aliases: Array(String), allowed_in_dm: Bool, required_access_level: AccessLevel, callable: Base.class)
+    alias CommandData = NamedTuple(name: String, aliases: Array(String), allowed_in_dm: Bool, required_access_level: AccessLevel, callable: Command.class)
 
     Log = Worker::Log.for("command_call_executor")
 
@@ -40,63 +40,63 @@ class Worker
         name:                  "play",
         aliases:               ["play", "p", "resume"],
         allowed_in_dm:         false,
-        required_access_level: AccessLevel::Base,
+        required_access_level: AccessLevel::ServerDj,
         callable:              PlayCommand,
       },
       {
         name:                  "choose",
         aliases:               ["choose", "ch"],
         allowed_in_dm:         false,
-        required_access_level: AccessLevel::Base,
+        required_access_level: AccessLevel::ServerDj,
         callable:              ChooseCommand,
       },
       {
         name:                  "cancel",
         aliases:               ["cancel"],
         allowed_in_dm:         false,
-        required_access_level: AccessLevel::Base,
+        required_access_level: AccessLevel::ServerDj,
         callable:              CancelCommand,
       },
       {
         name:                  "skip",
         aliases:               ["skip", "s"],
         allowed_in_dm:         false,
-        required_access_level: AccessLevel::Base,
+        required_access_level: AccessLevel::ServerDj,
         callable:              SkipCommand,
       },
       {
         name:                  "remove",
         aliases:               ["remove"],
         allowed_in_dm:         false,
-        required_access_level: AccessLevel::Base,
+        required_access_level: AccessLevel::ServerDj,
         callable:              RemoveCommand,
       },
       {
         name:                  "stop",
         aliases:               ["stop"],
         allowed_in_dm:         false,
-        required_access_level: AccessLevel::Base,
+        required_access_level: AccessLevel::ServerDj,
         callable:              StopCommand,
       },
       {
         name:                  "leave",
         aliases:               ["leave", "pause"],
         allowed_in_dm:         false,
-        required_access_level: AccessLevel::Base,
+        required_access_level: AccessLevel::ServerDj,
         callable:              LeaveCommand,
       },
       {
         name:                  "shuffle",
         aliases:               ["shuffle"],
         allowed_in_dm:         false,
-        required_access_level: AccessLevel::Base,
+        required_access_level: AccessLevel::ServerDj,
         callable:              ShuffleCommand,
       },
       {
         name:                  "repeat",
         aliases:               ["repeat"],
         allowed_in_dm:         false,
-        required_access_level: AccessLevel::Base,
+        required_access_level: AccessLevel::ServerDj,
         callable:              RepeatCommand,
       },
       {

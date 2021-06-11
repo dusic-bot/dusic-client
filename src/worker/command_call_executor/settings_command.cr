@@ -1,11 +1,11 @@
-require "./base"
+require "./command"
 
 class Worker
   class CommandCallExecutor
-    class SettingsCommand < Base
+    class SettingsCommand < Command
       ROLE_ID_OR_MENTION_REGEX = /^(?:(\d+)|<@&(\d+)>)$/
 
-      def execute
+      def execute : Nil
         if @command_call.arguments.empty?
           reply_with_current_settings
           return

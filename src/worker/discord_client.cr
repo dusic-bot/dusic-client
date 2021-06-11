@@ -84,6 +84,12 @@ class Worker
       nil
     end
 
+    def delete_message(channel_id : UInt64, message_id : UInt64) : Nil
+      @client.delete_message(channel_id, message_id)
+    rescue exception : Discord::CodeException
+      Log.error(exception: exception) { "Can not delete message##{channel_id}" }
+    end
+
     def server_name(server_id : UInt64) : String
       cache.guilds[server_id].name
     rescue exception : KeyError
@@ -164,6 +170,7 @@ class Worker
 
     private def voice_server_update_handler(payload : Discord::Gateway::VoiceServerUpdatePayload) : Nil
       Log.debug { "Voice server update" }
+      @worker.audio_players_storage.handle_voice_server_update(payload.guild_id.to_u64, payload.token, payload.endpoint)
     end
 
     private def update_status : Nil
