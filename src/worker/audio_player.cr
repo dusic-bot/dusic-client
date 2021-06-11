@@ -30,7 +30,7 @@ class Worker
 
     def handle_voice_server_update(token : String, endpoint : String) : Nil
       Log.debug { "VSU" }
-      # TODO
+      # TODO: update voice server
     end
   end
 end
