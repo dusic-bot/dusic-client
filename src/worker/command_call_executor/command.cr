@@ -1,3 +1,5 @@
+require "./command/*"
+
 class Worker
   class CommandCallExecutor
     abstract class Command

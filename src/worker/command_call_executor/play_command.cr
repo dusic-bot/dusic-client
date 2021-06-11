@@ -3,6 +3,8 @@ require "./command"
 class Worker
   class CommandCallExecutor
     class PlayCommand < Command
+      include Command::WithAudiosAddition
+
       YOUTUBE_VIDEO_ID_REGEX = /(?:https?:\/\/)?(?:www\.)?youtu(?:\.be\/|be.com\/\S*(?:watch|embed)(?:(?:(?=\/[^&\s\?]+(?!\S))\/)|(?:\S*v=|v\/)))([^&\s\?]+)/i
       VK_URL_REGEX           = /(?:https?:\/\/)?(?:www\.)?(?:vk|vkontakte)\.(?:com|ru)\//i
       SELECTION_SIZE         = 10
@@ -24,7 +26,7 @@ class Worker
 
       def execute : Nil
         manager = determine_manager
-        apply_option_aliases!
+        apply_audios_addition_option_aliases!
 
         if manager == Manager::None
           if audio_player.queue.empty?
@@ -55,21 +57,7 @@ class Worker
           reply(t("commands.play.title"), t("audio_player.text.queue_limit_hit"), "warning")
         end
 
-        audios.shuffle! if @command_call.options.has_key?("shuffle")
-
-        if @command_call.options.has_key?("skip")
-          audio_player.skip
-        end
-
-        if @command_call.options.has_key?("first")
-          audio_player.queue.unshift(audios)
-        else
-          audio_player.queue.push(audios)
-        end
-
-        reply_to_added_audios(audios, title)
-
-        audio_player.play
+        add_and_play(audios, title)
       end
 
       private def determine_manager : Manager
@@ -116,13 +104,6 @@ class Worker
         !vk_url.nil?
       end
 
-      private def apply_option_aliases! : Nil
-        options = @command_call.options
-        if options.has_key?("now")
-          options["first"] = options["skip"] = options["instant"] = nil
-        end
-      end
-
       private def find_asset : AudioPlayer::AssetAudio?
         name = @command_call.arguments.join("_").downcase
 
@@ -139,30 +120,6 @@ class Worker
           ASSETS_LIST[:mario_death]
         else
           nil
-        end
-      end
-
-      private def reply_to_added_audios(audios : AudioPlayer::AudioArray, title : String? = nil) : Nil
-        if audios.empty?
-          reply(t("commands.play.title"), t("commands.play.text.nothing_found"), "warning")
-        elsif audios.size == 1
-          reply(
-            t("audio_player.title"),
-            t("audio_player.text.audio_added", {
-              artist:   audios.first.artist,
-              title:    audios.first.title,
-              duration: Dusic.format_seconds(audios.first.duration),
-            }),
-            "success"
-          )
-        elsif title
-          reply(
-            t("audio_player.title"),
-            t("audio_player.text.audio_list_added", {title: title}, count: audios.size),
-            "success"
-          )
-        else
-          reply(t("audio_player.title"), t("audio_player.text.audios_added", count: audios.size), "success")
         end
       end
 
