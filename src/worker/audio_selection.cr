@@ -15,5 +15,15 @@ class Worker
       @audios : Array(AudioPlayer::Audio)
     )
     end
+
+    def fetch(indexes : Array(Int32)) : Array(AudioPlayer::Audio)
+      result = Array(AudioPlayer::Audio).new
+      indexes.each do |i|
+        if audio = @audios[i]?
+          result.push(audio)
+        end
+      end
+      result
+    end
   end
 end

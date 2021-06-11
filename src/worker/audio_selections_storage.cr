@@ -22,5 +22,9 @@ class Worker
     def delete(server_id : UInt64, user_id : UInt64) : AudioSelection?
       @audio_selections[server_id].delete(user_id)
     end
+
+    def delete(audio_selection : AudioSelection) : AudioSelection?
+      delete(audio_selection.server_id, audio_selection.user_id)
+    end
   end
 end

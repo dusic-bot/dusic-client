@@ -10,7 +10,7 @@ class Worker
           return
         end
 
-        @worker.audio_selections_storage.delete(@command_call.server_id, @command_call.author_id)
+        @worker.audio_selections_storage.delete(selection)
 
         if message_id = selection.message_id
           @worker.discord_client.delete_message(selection.channel_id, message_id)
