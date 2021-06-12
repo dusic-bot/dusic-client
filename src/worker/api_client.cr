@@ -41,9 +41,14 @@ class Worker
       @servers[server_id]
     end
 
-    def server_save(server) : Mapping::Server
+    def server_save(server : Mapping::Server) : Mapping::Server
       new_server = put_server(server)
       @servers[new_server.id] = new_server
+    end
+
+    def server_save(server_id : UInt64) : Mapping::Server
+      server = @servers[server_id]
+      server_save(server)
     end
 
     def vk_audios(query : String) : Mapping::AudioRequest
