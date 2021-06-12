@@ -284,8 +284,12 @@ class Worker
     end
 
     private def add_audio_to_statistic(audio : Audio) : Nil
-      server.today_statistic.tracks_length += audio.duration.to_i
-      server.today_statistic.tracks_amount += 1
+      local_server = server
+
+      local_server.today_statistic.tracks_length += audio.duration.to_i
+      local_server.today_statistic.tracks_amount += 1
+      local_server.statistic.tracks_length += audio.duration.to_i
+      local_server.statistic.tracks_amount += 1
     end
 
     private def send(text : String, color_key : String? = nil) : UInt64?
