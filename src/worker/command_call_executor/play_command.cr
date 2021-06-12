@@ -31,8 +31,10 @@ class Worker
         if manager == Manager::None
           if audio_player.queue.empty?
             reply(t("commands.play.title"), t("audio_player.text.queue_is_empty"), "warning")
+          elsif voice_channel_id = @command_call.voice_channel_id
+            audio_player.play(voice_channel_id)
           else
-            audio_player.play
+            reply(t("commands.play.title"), t("audio_player.errors.you_are_not_in_vc"), "warning")
           end
 
           return

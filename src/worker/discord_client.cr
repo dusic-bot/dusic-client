@@ -55,6 +55,10 @@ class Worker
       Log.error { "failed to log message '#{message}' to Discord" }
     end
 
+    def voice_client(server_id : UInt64) : VoiceClient?
+      @voice_clients[server_id]?
+    end
+
     def send_dm(user_id : UInt64, text : String) : UInt64?
       channel_id = cache.resolve_dm_channel(user_id)
       @client.create_message(channel_id, text).id.to_u64
@@ -130,6 +134,10 @@ class Worker
       raise NotFoundError.new
     end
 
+    def voice_state_update(server_id : UInt64, channel_id : UInt64) : Nil
+      @client.voice_state_update(server_id, channel_id, self_mute: false, self_deaf: true)
+    end
+
     private def cache : Discord::Cache
       @client.cache.not_nil!
     end
@@ -179,14 +187,17 @@ class Worker
 
     private def voice_server_update_handler(payload : Discord::Gateway::VoiceServerUpdatePayload) : Nil
       if discord_session = @client.session
-        guild_id = payload.guild_id.to_u64
+        server_id = payload.guild_id.to_u64
         discord_voice_client = Discord::VoiceClient.new(payload, discord_session, @bot_id)
         discord_voice_client.on_ready do
-          @voice_clients[guild_id] = VoiceClient.new(@worker, guild_id, discord_voice_client)
+          if @voice_clients.has_key?(server_id)
+            Log.warn { "voice client already exists for server##{server_id}" }
+          end
+          @voice_clients[server_id] = VoiceClient.new(@worker, server_id, discord_voice_client)
         end
         discord_voice_client.run # NOTE: Blocks thread until websocket is closed
-        Log.debug { "voice connection closed at server##{guild_id}" }
-        @voice_clients.delete(guild_id)
+        Log.debug { "voice connection closed at server##{server_id}" }
+        @voice_clients.delete(server_id)
       else
         Log.warn { "failed to handle voice server update for server##{payload.guild_id}: Discord session is nil" }
       end

@@ -48,7 +48,11 @@ class Worker
 
           reply_to_added_audios(audios, title)
 
-          audio_player.play
+          if voice_channel_id = @command_call.voice_channel_id
+            audio_player.play(voice_channel_id)
+          else
+            reply(t("commands.play.title"), t("audio_player.errors.you_are_not_in_vc"), "warning")
+          end
         end
       end
     end
