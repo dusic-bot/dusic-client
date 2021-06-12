@@ -31,6 +31,12 @@ class Worker
       True
     end
 
+    enum MessageType
+      Loading
+      FailedToLoad
+      Playing
+    end
+
     @loop_stop_flag : LoopStopFlag = LoopStopFlag::True
     @track_stop_flag : AudioStopFlag = AudioStopFlag::True
     @current_audio_frames_count : UInt64 = 0
@@ -167,10 +173,10 @@ class Worker
       prepare_next_audio
 
       if audio.status == Audio::Status::Ready
-        # TODO: send audio message
+        send_audio_message(MessageType::Playing, audio)
         sleep 5.seconds # TODO: play audio, skipping @current_audio_frames_count
       else
-        # TODO: send "failed to load audio"
+        send_audio_message(MessageType::FailedToLoad, audio)
         sleep AUDIO_LOAD_FAILED_TIMEOUT
       end
     rescue exception
@@ -211,7 +217,7 @@ class Worker
     end
 
     private def prepare_audio(audio : Audio) : Nil
-      # TODO: send loading message
+      send_audio_message(MessageType::Loading, audio)
       # TODO: call audio prepare algorithm
     end
 
@@ -219,12 +225,30 @@ class Worker
       # TODO: call audio prepare algorithm
     end
 
-    private def send(text : String, color_key : String? = nil) : UInt64?
-      return if @channel_id.nil?
+    def send_audio_message(type : MessageType, audio : Audio)
+      t_options = {
+        artist:   audio.artist,
+        title:    audio.title,
+        duration: Dusic.format_seconds(audio.duration),
+      }
 
-      title = Dusic.t("audio_player.title") { server.setting.language }
-      color = color_key ? Dusic.color(color_key) : nil
-      @worker.discord_client.send_embed(@channel_id, title, text, color: color)
+      key =
+        case type
+        when MessageType::Loading      then "loading"
+        when MessageType::FailedToLoad then "failed_to_load"
+        when MessageType::Playing      then "playing"
+        else                                "playing"
+        end
+
+      send(t("audio_player.text.#{key}", t_options), "primary")
+    end
+
+    private def send(text : String, color_key : String? = nil) : UInt64?
+      if channel_id = @channel_id
+        title = Dusic.t("audio_player.title") { server.setting.language }
+        color = color_key ? Dusic.color(color_key) : nil
+        @worker.discord_client.send_embed(channel_id, title, text, color: color)
+      end
     end
 
     private def t(*args, **opts) : String

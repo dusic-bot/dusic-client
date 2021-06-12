@@ -34,7 +34,7 @@ class Worker
       end
 
       private def audio_player : AudioPlayer
-        @worker.audio_players_storage.audio_player(@command_call.server_id)
+        @worker.audio_players_storage.audio_player(@command_call.server_id, @command_call.channel_id)
       end
 
       private def prefix : String
