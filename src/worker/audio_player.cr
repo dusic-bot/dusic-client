@@ -38,6 +38,7 @@ class Worker
     getter queue : Queue
     getter status : Status
     getter current_audio : Audio?
+    property channel_id : UInt64?
 
     {% for value in Status.constants %}
       def {{ value.downcase }}?
@@ -49,6 +50,7 @@ class Worker
       @queue = Queue.new(@worker, @server_id)
       @status = Status::Disconnected
       @current_audio = nil
+      @channel_id = nil
     end
 
     def play(channel_id : UInt64) : Nil
