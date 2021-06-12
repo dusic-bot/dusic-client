@@ -25,10 +25,5 @@ class Worker
         end
       end
     end
-
-    # Pass Discord voice server update event to audio player
-    def handle_voice_server_update(server_id : UInt64, token : String, endpoint : String) : Nil
-      audio_player(server_id).handle_voice_server_update(token, endpoint)
-    end
   end
 end

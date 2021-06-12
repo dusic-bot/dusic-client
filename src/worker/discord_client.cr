@@ -19,6 +19,7 @@ class Worker
     @bot_token : String = Dusic.secrets["bot_token"].as_s
     @default_prefix : String = Dusic.secrets["default_prefix"].as_s
     @log_channel_id : UInt64 = Dusic.secrets["log_channel_id"].as_s.to_u64
+    @voice_clients : Hash(UInt64, VoiceClient) = Hash(UInt64, VoiceClient).new
 
     def initialize(@worker : Worker)
       @client = Discord::Client.new(
@@ -169,8 +170,18 @@ class Worker
     end
 
     private def voice_server_update_handler(payload : Discord::Gateway::VoiceServerUpdatePayload) : Nil
-      Log.debug { "Voice server update" }
-      @worker.audio_players_storage.handle_voice_server_update(payload.guild_id.to_u64, payload.token, payload.endpoint)
+      if discord_session = @client.session
+        guild_id = payload.guild_id.to_u64
+        discord_voice_client = Discord::VoiceClient.new(payload, discord_session, @bot_id)
+        discord_voice_client.on_ready do
+          @voice_clients[guild_id] = VoiceClient.new(@worker, guild_id, discord_voice_client)
+        end
+        discord_voice_client.run # NOTE: Blocks thread until websocket is closed
+        Log.debug { "voice connection closed at server##{guild_id}" }
+        @voice_clients.delete(guild_id)
+      else
+        Log.warn { "failed to handle voice server update for server##{payload.guild_id}: Discord session is nil" }
+      end
     end
 
     private def update_status : Nil
