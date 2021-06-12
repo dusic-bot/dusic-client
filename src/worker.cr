@@ -42,6 +42,7 @@ class Worker
 
   def stop : Nil
     Log.info { "stopping worker #{@shard_id}_#{@shard_num}" }
+    audio_players_storage.stop_all
     discord_client.stop
     api_client.stop
     @is_running = false
