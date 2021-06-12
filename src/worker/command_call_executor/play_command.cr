@@ -29,14 +29,7 @@ class Worker
         apply_audios_addition_option_aliases!
 
         if manager == Manager::None
-          if audio_player.queue.empty?
-            reply(t("commands.play.title"), t("audio_player.text.queue_is_empty"), "warning")
-          elsif voice_channel_id = @command_call.voice_channel_id
-            audio_player.play(voice_channel_id)
-          else
-            reply(t("commands.play.title"), t("audio_player.errors.you_are_not_in_vc"), "warning")
-          end
-
+          play_or_reply_with_error
           return
         end
 
