@@ -135,7 +135,7 @@ class Worker
     ensure
       @loop_stop_flag = LoopStopFlag::False
       @status = Status::Connected
-      @worker.api_client.server_save(@server_id)
+      @worker.api_client.server_save(server)
       # TODO: delete message
     end
 
@@ -217,6 +217,26 @@ class Worker
 
     private def prepare_next_audio : Nil
       # TODO: call audio prepare algorithm
+    end
+
+    private def send(text : String, color_key : String? = nil) : UInt64?
+      return if @channel_id.nil?
+
+      title = Dusic.t("audio_player.title") { server.setting.language }
+      color = color_key ? Dusic.color(color_key) : nil
+      @worker.discord_client.send_embed(@channel_id, title, text, color: color)
+    end
+
+    private def t(*args, **opts) : String
+      Dusic.t(*args, **opts) { server.setting.language }
+    end
+
+    private def server : ApiClient::Mapping::Server
+      @worker.api_client.server(@server_id)
+    end
+
+    private def premium? : Bool
+      server.premium?
     end
   end
 end
