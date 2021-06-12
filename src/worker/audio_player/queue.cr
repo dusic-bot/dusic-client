@@ -45,6 +45,10 @@ class Worker
         @queue[start, count]
       end
 
+      def first? : Audio?
+        @queue.first?
+      end
+
       def clear : Nil
         @queue.clear
       end
