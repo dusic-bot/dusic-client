@@ -82,12 +82,12 @@ class Worker
 
     private def voice_disconnect : Nil
       Log.debug { "disconnecting from server##{@server_id}" }
-      @state = State::Disconnecting
+      @state = Status::Disconnecting
       @worker.discord_client.voice_state_update(@server_id, nil)
     rescue exception
       Log.error(exception: exception) { "failed to disconnect from voice channel at server##{@server_id}" }
     ensure
-      @state = State::Disconnected
+      @state = Status::Disconnected
     end
 
     private def start_play_loop : Nil
