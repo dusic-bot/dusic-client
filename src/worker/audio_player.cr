@@ -81,18 +81,27 @@ class Worker
     end
 
     private def voice_disconnect : Nil
-      # TODO: disconnect from voice channel
+      Log.debug { "disconnecting from server##{@server_id}" }
+      @state = State::Disconnecting
+      @worker.discord_client.voice_state_update(@server_id, nil)
+    rescue exception
+      Log.error(exception: exception) { "failed to disconnect from voice channel at server##{@server_id}" }
+    ensure
+      @state = State::Disconnected
     end
 
     private def start_play_loop : Nil
+      Log.debug { "starting play loop at server##{@server_id}" }
       # TODO: play tracks from queue
     end
 
     private def stop_play_loop : Nil
+      Log.debug { "stopping play loop at server##{@server_id}" }
       # TODO: stop playing tracks from queue
     end
 
     private def stop_current_audio(preserve_current : Bool = false) : Nil
+      Log.debug { "stopping current track at server##{@server_id}" }
       # TODO: stop currently playing track
     end
   end
