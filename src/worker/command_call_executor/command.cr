@@ -19,16 +19,14 @@ class Worker
         @worker.discord_client.send_embed(@command_call.channel_id, title, description, footer_text, color, fields)
       end
 
-      private def t(key : String, options : Hash | NamedTuple? = nil, force_locale = nil, count = nil, default = nil, iter = nil) : String
-        locale = if force_locale
-                   force_locale
-                 elsif @command_call.server_id.zero?
-                   I18n.default_locale
-                 else
-                   server.setting.language
-                 end
-
-        I18n.translate(key, options, locale, count, default, iter)
+      private def t(*args, **opts) : String
+        Dusic.t(*args, **opts) do
+          if @command_call.server_id.zero?
+            I18n.default_locale
+          else
+            server.setting.language
+          end
+        end
       end
 
       private def server : ApiClient::Mapping::Server

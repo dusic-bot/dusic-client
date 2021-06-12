@@ -44,4 +44,27 @@ module Dusic::Misc
   rescue ArgumentError
     nil
   end
+
+  # Wrapper over I18n.translate
+  def t(
+    key : String,
+    options : Hash | NamedTuple? = nil,
+    force_locale = nil,
+    count = nil,
+    default = nil,
+    iter = nil,
+    &block : (-> String)
+  ) : String
+    locale : String = if force_locale
+      force_locale
+    else
+      block.call
+    end
+
+    I18n.translate(key, options, locale, count, default, iter)
+  end
+
+  def t(*args, **opts) : String
+    t(*args, **opts) { I18n.default_locale }
+  end
 end
