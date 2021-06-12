@@ -134,7 +134,7 @@ class Worker
       raise NotFoundError.new
     end
 
-    def voice_state_update(server_id : UInt64, channel_id : UInt64) : Nil
+    def voice_state_update(server_id : UInt64, channel_id : UInt64?) : Nil
       @client.voice_state_update(server_id, channel_id, self_mute: false, self_deaf: true)
     end
 
