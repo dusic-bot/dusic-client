@@ -3,10 +3,14 @@ require "./audio_player/*"
 class Worker
   # Single audio player
   class AudioPlayer
-    CONNECTION_TIMEOUT        = 6.seconds
-    CONNECTION_CHECK_INTERVAL = 500.milliseconds
-    AUDIO_LOAD_FAILED_TIMEOUT = 5.seconds
-    AUDIO_PLAY_INTERVAL       = 1.second
+    CONNECTION_TIMEOUT         = 6.seconds
+    CONNECTION_CHECK_INTERVAL  = 500.milliseconds
+    AUDIO_LOAD_FAILED_TIMEOUT  = 3.seconds
+    AUDIO_PLAY_INTERVAL        = 1.second
+    AUDIO_AWAIT_TIMEOUT        = 20.seconds
+    AUDIO_AWAIT_CHECK_INTERVAL = 1.second
+    PLAY_STOP_AWAIT            = 5.seconds
+    PLAY_STOP_CHECK_INTERVAL   = 500.milliseconds
 
     Log = Worker::Log.for("audio_player")
 
@@ -41,6 +45,7 @@ class Worker
     @track_stop_flag : AudioStopFlag = AudioStopFlag::True
     @current_audio_frames_count : UInt64 = 0
     @last_message : NamedTuple(channel_id: UInt64, message_id: UInt64)? = nil
+    @play_fiber : Fiber? = nil
 
     getter queue : Queue
     getter status : Status
@@ -77,6 +82,10 @@ class Worker
 
       stop_play_loop
       stop_audio_play(preserve_current: preserve_current)
+      if play_fiber = @play_fiber
+        finished_properly = Dusic.await(PLAY_STOP_AWAIT, PLAY_STOP_CHECK_INTERVAL) { play_fiber.dead? }
+        Log.warn { "play fiber at server##{@server_id} didn't finish properly" } unless finished_properly
+      end
     end
 
     private def voice_client : DiscordClient::VoiceClient?
@@ -130,7 +139,7 @@ class Worker
         # TODO: check time limit
 
         if audio = queue.shift(1).first?
-          # TODO: add track to statistic
+          add_audio_to_statistic(audio)
           start_audio_play(audio)
           sleep AUDIO_PLAY_INTERVAL
         else
@@ -140,8 +149,9 @@ class Worker
     ensure
       @loop_stop_flag = LoopStopFlag::False
       @status = Status::Connected
-      @worker.api_client.server_save(server)
       delete_last_audio_message
+      @worker.api_client.server_save(server)
+      Log.debug { "play loop finished at server##{@server_id}" }
     end
 
     private def stop_play_loop : Nil
@@ -163,7 +173,7 @@ class Worker
         when Audio::Status::Loading
           await_audio(audio)
         when Audio::Status::Destroyed
-          # TODO: skip audio
+          # NOTE: doing nothing; audio will be skipped
         end
       rescue exception
         Log.error(exception: exception) { "failed loading #{audio}" }
@@ -199,7 +209,14 @@ class Worker
     end
 
     private def play_async(channel_id : UInt64) : Nil
-      Dusic.spawn("ap_#{@server_id}") { play_sync(channel_id) }
+      if @play_fiber
+        Log.warn { "play fiber already exists for server##{@server_id}" }
+      end
+
+      @play_fiber = Dusic.spawn("ap_#{@server_id}") do
+        play_sync(channel_id)
+        @play_fiber = nil
+      end
     end
 
     private def play_sync(channel_id : UInt64) : Nil
@@ -212,7 +229,9 @@ class Worker
     end
 
     private def await_audio(audio : Audio) : Nil
-      # TODO: await until audio is not in Audio::Status::Loading anymore
+      Dusic.await(AUDIO_AWAIT_TIMEOUT, AUDIO_AWAIT_CHECK_INTERVAL) do
+        audio.status != Audio::Status::Loading
+      end
     end
 
     private def prepare_current_audio(audio : Audio) : Nil
@@ -262,6 +281,11 @@ class Worker
         @worker.discord_client.delete_message(last_message[:channel_id], last_message[:message_id])
         @last_message = nil
       end
+    end
+
+    private def add_audio_to_statistic(audio : Audio) : Nil
+      server.today_statistic.tracks_length += audio.duration.to_i
+      server.today_statistic.tracks_amount += 1
     end
 
     private def send(text : String, color_key : String? = nil) : UInt64?

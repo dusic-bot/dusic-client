@@ -15,7 +15,7 @@ module Dusic::Misc
 
   # Wrapper around default `spawn` method
   # TODO: Currently it seems to have no use. Consider deleting
-  def spawn(name : String? = nil, same_thread : Bool = false, &block)
+  def spawn(name : String? = nil, same_thread : Bool = false, &block) : Fiber
     ::spawn(name: name, same_thread: same_thread, &block)
   end
 
