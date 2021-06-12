@@ -154,9 +154,16 @@ class Worker
       return if message.author.bot    # Ignore bots
       return if message.author.system # Ignore system messages
 
-      author_roles_ids : Array(UInt64) = [] of UInt64
-      if member = message.member
+      author_roles_ids : Array(UInt64) = if member = message.member
         member.roles.map &.to_u64
+      else
+        [] of UInt64
+      end
+
+      voice_channel_id : UInt64? = if guild_id = message.guild_id
+        cache.resolve_voice_state(guild_id, message.author.id).channel_id.try &.to_u64
+      else
+        nil
       end
 
       context = {
@@ -164,6 +171,7 @@ class Worker
         author_roles_ids: author_roles_ids,
         server_id:        message.guild_id.try &.to_u64 || 0_u64,
         channel_id:       message.channel_id.to_u64,
+        voice_channel_id: voice_channel_id,
       }
       command_calls = @worker.message_handler.handle(message.content, context)
       @worker.command_call_handler.handle(command_calls) unless command_calls.empty?

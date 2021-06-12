@@ -5,7 +5,8 @@ class Worker
       author_id: UInt64,
       author_roles_ids: Array(UInt64),
       server_id: UInt64,
-      channel_id: UInt64)
+      channel_id: UInt64,
+      voice_channel_id: UInt64?)
 
     getter name : String
     getter arguments : Array(String)
@@ -14,6 +15,7 @@ class Worker
     getter author_roles_ids : Array(UInt64)
     getter server_id : UInt64
     getter channel_id : UInt64
+    getter voice_channel_id : UInt64?
     getter call_time : Time
 
     def initialize(@name, @arguments, @options, context : Context)
