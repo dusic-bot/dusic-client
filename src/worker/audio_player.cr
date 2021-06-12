@@ -61,9 +61,7 @@ class Worker
     end
 
     def play(channel_id : UInt64) : Nil
-      unless disconnected?
-        Log.warn { "play called for server##{@server_id}, although status is #{@status}" }
-      end
+      return unless disconnected?
 
       play_async(channel_id)
     end
