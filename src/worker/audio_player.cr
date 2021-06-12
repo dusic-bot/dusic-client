@@ -40,6 +40,7 @@ class Worker
     @loop_stop_flag : LoopStopFlag = LoopStopFlag::True
     @track_stop_flag : AudioStopFlag = AudioStopFlag::True
     @current_audio_frames_count : UInt64 = 0
+    @last_message : NamedTuple(channel_id: UInt64, message_id: UInt64)? = nil
 
     getter queue : Queue
     getter status : Status
@@ -142,7 +143,7 @@ class Worker
       @loop_stop_flag = LoopStopFlag::False
       @status = Status::Connected
       @worker.api_client.server_save(server)
-      # TODO: delete message
+      delete_last_audio_message
     end
 
     private def stop_play_loop : Nil
@@ -160,7 +161,7 @@ class Worker
       begin
         case audio.status
         when Audio::Status::NotReady
-          prepare_audio(audio)
+          prepare_current_audio(audio)
         when Audio::Status::Loading
           await_audio(audio)
         when Audio::Status::Destroyed
@@ -216,16 +217,25 @@ class Worker
       # TODO: await until audio is not in Audio::Status::Loading anymore
     end
 
-    private def prepare_audio(audio : Audio) : Nil
+    private def prepare_current_audio(audio : Audio) : Nil
       send_audio_message(MessageType::Loading, audio)
-      # TODO: call audio prepare algorithm
+      prepare_audio(audio)
     end
 
     private def prepare_next_audio : Nil
-      # TODO: call audio prepare algorithm
+      audio = queue.first?
+      return if audio.nil?
+
+      Dusic.spawn("audio_prep") { prepare_audio(audio) }
     end
 
-    def send_audio_message(type : MessageType, audio : Audio)
+    private def prepare_audio(audio : Audio) : Nil
+      Log.debug { "preparing #{audio} for server##{@server_id}" }
+
+      sleep 2.seconds # TODO: call audio prepare algorithm
+    end
+
+    def send_audio_message(type : MessageType, audio : Audio) : UInt64?
       t_options = {
         artist:   audio.artist,
         title:    audio.title,
@@ -240,7 +250,20 @@ class Worker
         else                                "playing"
         end
 
-      send(t("audio_player.text.#{key}", t_options), "primary")
+      delete_last_audio_message
+      channel_id = @channel_id
+      message_id = send(t("audio_player.text.#{key}", t_options), "primary")
+      if channel_id && message_id
+        @last_message = {channel_id: channel_id, message_id: message_id}
+      end
+      message_id
+    end
+
+    def delete_last_audio_message : Nil
+      if last_message = @last_message
+        @worker.discord_client.delete_message(last_message[:channel_id], last_message[:message_id])
+        @last_message = nil
+      end
     end
 
     private def send(text : String, color_key : String? = nil) : UInt64?
