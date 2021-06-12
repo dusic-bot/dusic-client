@@ -24,6 +24,7 @@ class Worker
       @author_roles_ids = context[:author_roles_ids]
       @server_id = context[:server_id]
       @channel_id = context[:channel_id]
+      @voice_channel_id = context[:voice_channel_id]
     end
 
     def to_s(io : IO) : Nil

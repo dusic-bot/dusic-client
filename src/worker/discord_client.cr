@@ -169,7 +169,11 @@ class Worker
       end
 
       voice_channel_id : UInt64? = if guild_id = message.guild_id
-        cache.resolve_voice_state(guild_id, message.author.id).channel_id.try &.to_u64
+        begin
+          cache.resolve_voice_state(guild_id, message.author.id).channel_id.try &.to_u64
+        rescue KeyError
+          nil
+        end
       else
         nil
       end
