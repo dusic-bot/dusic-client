@@ -14,7 +14,7 @@ class Worker
       end
 
       def file=(new_file : File) : File
-        @prepare_status = Status::Ready
+        @status = Status::Ready
         @file = new_file
       end
 
@@ -36,7 +36,7 @@ class Worker
         end
 
         @file = nil
-        @prepare_status = Status::Destroyed
+        @status = Status::Destroyed
       end
     end
   end
