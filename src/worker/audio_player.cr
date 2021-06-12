@@ -5,6 +5,8 @@ class Worker
   class AudioPlayer
     CONNECTION_TIMEOUT        = 6.seconds
     CONNECTION_CHECK_INTERVAL = 500.milliseconds
+    AUDIO_LOAD_FAILED_TIMEOUT = 5.seconds
+    AUDIO_PLAY_INTERVAL       = 1.second
 
     Log = Worker::Log.for("audio_player")
 
@@ -18,6 +20,21 @@ class Worker
       Disconnecting
     end
 
+    enum LoopStopFlag
+      False
+      True
+    end
+
+    enum AudioStopFlag
+      False
+      TruePreserveCurrent
+      True
+    end
+
+    @loop_stop_flag : LoopStopFlag = LoopStopFlag::True
+    @track_stop_flag : AudioStopFlag = AudioStopFlag::True
+    @current_audio_frames_count : UInt64 = 0
+
     getter queue : Queue
     getter status : Status
     getter current_audio : Audio?
@@ -30,30 +47,29 @@ class Worker
 
     def initialize(@worker : Worker, @server_id : UInt64)
       @queue = Queue.new(@worker, @server_id)
-      @current_audio = nil
       @status = Status::Disconnected
+      @current_audio = nil
     end
 
     def play(channel_id : UInt64) : Nil
-      voice_connect(channel_id)
-      start_play_loop
-    rescue exception
-      Log.error(exception: exception) { "failure during playback" }
-    ensure
-      voice_disconnect
+      unless disconnected?
+        Log.warn { "play called for server##{@server_id}, although status is #{@status}" }
+      end
+
+      play_async(channel_id)
     end
 
     def skip : Nil
       return if disconnected?
 
-      stop_current_audio(preserve_current: false)
+      stop_audio_play(preserve_current: false)
     end
 
     def stop(preserve_current : Bool = false) : Nil
       return if disconnected?
 
       stop_play_loop
-      stop_current_audio(preserve_current: preserve_current)
+      stop_audio_play(preserve_current: preserve_current)
     end
 
     private def voice_client : DiscordClient::VoiceClient?
@@ -92,17 +108,113 @@ class Worker
 
     private def start_play_loop : Nil
       Log.debug { "starting play loop at server##{@server_id}" }
-      # TODO: play tracks from queue
+      @loop_stop_flag = LoopStopFlag::False
+
+      # Resume suspended play
+      if audio = @current_audio
+        start_audio_play(audio)
+        @current_audio_frames_count = 0_u64
+      end
+
+      # Main loop
+      while @loop_stop_flag == LoopStopFlag::False
+        # TODO: check whether daily stats aren't outdated
+        # TODO: check autopause
+        # TODO: check time limit
+
+        if audio = queue.shift(1).first?
+          # TODO: add track to statistic
+          start_audio_play(audio)
+          sleep AUDIO_PLAY_INTERVAL
+        else
+          @loop_stop_flag = LoopStopFlag::True
+        end
+      end
+    ensure
+      @loop_stop_flag = LoopStopFlag::False
+      @status = Status::Connected
+      @worker.api_client.server_save(@server_id)
+      # TODO: delete message
     end
 
     private def stop_play_loop : Nil
       Log.debug { "stopping play loop at server##{@server_id}" }
-      # TODO: stop playing tracks from queue
+      @loop_stop_flag = LoopStopFlag::True
     end
 
-    private def stop_current_audio(preserve_current : Bool = false) : Nil
+    private def start_audio_play(audio : Audio) : Nil
+      Log.debug { "playing #{audio} at server##{@server_id}" }
+
+      @track_stop_flag = AudioStopFlag::False
+      @status = Status::Playing
+      @current_audio = audio
+
+      begin
+        case audio.status
+        when Audio::Status::NotReady
+          prepare_audio(audio)
+        when Audio::Status::Loading
+          await_audio(audio)
+        when Audio::Status::Destroyed
+          # TODO: skip audio
+        end
+      rescue exception
+        Log.error(exception: exception) { "failed loading #{audio}" }
+      end
+
+      prepare_next_audio
+
+      if audio.status == Audio::Status::Ready
+        # TODO: send audio message
+        sleep 5.seconds # TODO: play audio, skipping @current_audio_frames_count
+      else
+        # TODO: send "failed to load audio"
+        sleep AUDIO_LOAD_FAILED_TIMEOUT
+      end
+    rescue exception
+      Log.error(exception: exception) { "failed playing #{audio} at server##{@server_id}" }
+    ensure
+      if @track_stop_flag == AudioStopFlag::TruePreserveCurrent
+        @current_audio_frames_count = 0_u64 # TODO: actual value
+      else
+        @current_audio = nil
+      end
+      @status = Status::Connected
+      @track_stop_flag = AudioStopFlag::False
+
+      audio.destroy unless @queue.includes?(audio)
+    end
+
+    private def stop_audio_play(preserve_current : Bool = false) : Nil
       Log.debug { "stopping current track at server##{@server_id}" }
-      # TODO: stop currently playing track
+
+      @track_stop_flag = preserve_current ? AudioStopFlag::TruePreserveCurrent : AudioStopFlag::True
+    end
+
+    private def play_async(channel_id : UInt64) : Nil
+      Dusic.spawn("ap_#{@server_id}") { play_sync(channel_id) }
+    end
+
+    private def play_sync(channel_id : UInt64) : Nil
+      voice_connect(channel_id)
+      start_play_loop
+    rescue exception
+      Log.error(exception: exception) { "failure during playback" }
+    ensure
+      voice_disconnect
+    end
+
+    private def await_audio(audio : Audio) : Nil
+      # TODO: await until audio is not in Audio::Status::Loading anymore
+    end
+
+    private def prepare_audio(audio : Audio) : Nil
+      # TODO: send loading message
+      # TODO: call audio prepare algorithm
+    end
+
+    private def prepare_next_audio : Nil
+      # TODO: call audio prepare algorithm
     end
   end
 end

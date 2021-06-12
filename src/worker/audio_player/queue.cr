@@ -57,6 +57,10 @@ class Worker
         @queue.shuffle!
       end
 
+      def includes?(audio : Audio) : Bool
+        @queue.includes?(audio)
+      end
+
       private def server : ApiClient::Mapping::Server
         @worker.api_client.server(@server_id)
       end
