@@ -93,7 +93,7 @@ class Worker
     private def publish_stats : Nil
       count = @worker.discord_client.servers_count
       cached = @servers.size
-      active = 0 # TODO: Count of active audio connections
+      active = @worker.audio_players_storage.active_count
       data = {
         action:               "connection_data",
         servers_count:        count,

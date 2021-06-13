@@ -15,6 +15,10 @@ class Worker
       player
     end
 
+    def active_count : Int32
+      @audio_players.count { |server_id, audio_player| !audio_player.disconnected? }
+    end
+
     def stop_all : Nil
       Log.debug { "Stopping #{@audio_players.size} audio players" }
       @audio_players.each do |id, player|
