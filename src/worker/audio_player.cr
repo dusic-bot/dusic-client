@@ -41,6 +41,7 @@ class Worker
       Playing
     end
 
+    @bot_id : UInt64 = Dusic.secrets["bot_id"].as_s.to_u64
     @loop_stop_flag : LoopStopFlag = LoopStopFlag::True
     @track_stop_flag : AudioStopFlag = AudioStopFlag::True
     @current_audio_frames_count : UInt64 = 0
@@ -134,9 +135,20 @@ class Worker
 
       # Main loop
       while @loop_stop_flag == LoopStopFlag::False
-        # TODO: check whether daily stats aren't outdated
-        # TODO: check autopause
-        # TODO: check time limit
+        @worker.api_client.server_save(server) if daily_outdated?
+
+        if autopause_enabled? && no_listeners?
+          send(t("audio_player.text.autopause_warning"), "secondary")
+          @loop_stop_flag = LoopStopFlag::True
+          next
+        end
+
+        if time_limit_hit?
+          Log.info { "playback time limit hit at server##{@server_id}" }
+          send(t("audio_player.text.time_limit_warning"), "secondary")
+          @loop_stop_flag = LoopStopFlag::True
+          next
+        end
 
         if audio = queue.shift(1).first?
           add_audio_to_statistic(audio)
@@ -252,7 +264,7 @@ class Worker
       sleep 2.seconds # TODO: call audio prepare algorithm
     end
 
-    def send_audio_message(type : MessageType, audio : Audio) : UInt64?
+    private def send_audio_message(type : MessageType, audio : Audio) : UInt64?
       t_options = {
         artist:   audio.artist,
         title:    audio.title,
@@ -276,7 +288,7 @@ class Worker
       message_id
     end
 
-    def delete_last_audio_message : Nil
+    private def delete_last_audio_message : Nil
       if last_message = @last_message
         @worker.discord_client.delete_message(last_message[:channel_id], last_message[:message_id])
         @last_message = nil
@@ -290,6 +302,32 @@ class Worker
       local_server.today_statistic.tracks_amount += 1
       local_server.statistic.tracks_length += audio.duration.to_i
       local_server.statistic.tracks_amount += 1
+    end
+
+    private def daily_outdated? : Bool
+      Time.utc - server.today_statistic.date >= 1.day
+    end
+
+    private def autopause_enabled? : Bool
+      return true unless premium?
+
+      server.setting.autopause
+    end
+
+    private def no_listeners? : Bool
+      bot_voice_channel_id = @worker.discord_client.user_voice_channel_id(@server_id, @bot_id)
+      return true if bot_voice_channel_id.nil?
+
+      ids = @worker.discord_client.voice_channel_users(@server_id, bot_voice_channel_id)
+      ids.delete(@bot_id)
+
+      ids.size.zero?
+    end
+
+    private def time_limit_hit? : Bool
+      return false if premium?
+
+      server.today_statistic.tracks_length > 30.minutes.to_i
     end
 
     private def send(text : String, color_key : String? = nil) : UInt64?

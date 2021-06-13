@@ -138,6 +138,29 @@ class Worker
       @client.voice_state_update(server_id, channel_id, self_mute: false, self_deaf: true)
     end
 
+    def user_voice_channel_id(server_id : UInt64, user_id : UInt64) : UInt64?
+      server_voice_states = cache.voice_states[server_id]?
+      return nil if server_voice_states.nil?
+
+      user_voice_state = server_voice_states[user_id]?
+      return nil if user_voice_state.nil?
+
+      user_voice_state.channel_id.try &.to_u64
+    end
+
+    def voice_channel_users(server_id : UInt64, voice_channel_id : UInt64) : Array(UInt64)
+      result = [] of UInt64
+
+      server_voice_states = cache.voice_states[server_id]?
+      return result if server_voice_states.nil?
+
+      server_voice_states.each do |user_id, voice_state|
+        result << user_id if voice_state.channel_id.try &.to_u64 == voice_channel_id
+      end
+
+      result
+    end
+
     private def cache : Discord::Cache
       @client.cache.not_nil!
     end
