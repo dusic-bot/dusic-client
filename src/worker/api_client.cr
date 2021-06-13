@@ -56,6 +56,11 @@ class Worker
       get_audios("vk", query, "auto")
     end
 
+    def audio(manager : String, id : String, format : String) : File
+      # TODO: Caching?
+      get_audio(manager, id, format)
+    end
+
     private def get_servers : Array(Mapping::Server)
       response = @http_client.get("discord_servers?shard_id=#{@worker.shard_id}&shard_num=#{@worker.shard_num}")
       Array(Mapping::Server).from_json(response)
@@ -76,9 +81,9 @@ class Worker
       Mapping::AudioRequest.from_json(response)
     end
 
-    private def get_audio(manager : String, id : String, format : String, volume : UInt8) : File
-      File.tempfile("#{manager}_#{id}_#{format}_#{volume}") do |file_io|
-        @http_client.get_raw("audios/#{manager}/#{id}?format=#{format}&volume=#{volume}") do |io|
+    private def get_audio(manager : String, id : String, format : String) : File
+      File.tempfile("#{manager}_#{id}_#{format}") do |file_io|
+        @http_client.get_raw("audios/#{manager}/#{id}?format=#{format}") do |io|
           IO.copy(io, file_io)
         end
       end
