@@ -31,6 +31,10 @@ class Worker
         end
       end
 
+      def ready? : Bool
+        status == Status::Ready
+      end
+
       abstract def status : Status
       abstract def open(&block : IO -> Nil) : Nil
       abstract def destroy : Nil

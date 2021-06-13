@@ -3,14 +3,12 @@ require "./audio_player/*"
 class Worker
   # Single audio player
   class AudioPlayer
-    CONNECTION_TIMEOUT         = 6.seconds
-    CONNECTION_CHECK_INTERVAL  = 500.milliseconds
-    AUDIO_LOAD_FAILED_TIMEOUT  = 3.seconds
-    AUDIO_PLAY_INTERVAL        = 1.second
-    AUDIO_AWAIT_TIMEOUT        = 20.seconds
-    AUDIO_AWAIT_CHECK_INTERVAL = 1.second
-    PLAY_STOP_AWAIT            = 5.seconds
-    PLAY_STOP_CHECK_INTERVAL   = 500.milliseconds
+    CONNECTION_TIMEOUT        = 6.seconds
+    CONNECTION_CHECK_INTERVAL = 500.milliseconds
+    AUDIO_LOAD_FAILED_TIMEOUT = 3.seconds
+    AUDIO_PLAY_INTERVAL       = 1.second
+    PLAY_STOP_AWAIT           = 5.seconds
+    PLAY_STOP_CHECK_INTERVAL  = 500.milliseconds
 
     Log = Worker::Log.for("audio_player")
 
@@ -178,22 +176,10 @@ class Worker
       @status = Status::Playing
       @current_audio = audio
 
-      begin
-        case audio.status
-        when Audio::Status::NotReady
-          prepare_current_audio(audio)
-        when Audio::Status::Loading
-          await_audio(audio)
-        when Audio::Status::Destroyed
-          # NOTE: doing nothing; audio will be skipped
-        end
-      rescue exception
-        Log.error(exception: exception) { "failed loading #{audio}" }
-      end
-
+      prepare_current_audio(audio)
       prepare_next_audio
 
-      if audio.status == Audio::Status::Ready
+      if audio.ready?
         send_audio_message(MessageType::Playing, audio)
         sleep 5.seconds # TODO: play audio, skipping @current_audio_frames_count
       else
