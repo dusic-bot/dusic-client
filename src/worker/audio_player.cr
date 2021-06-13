@@ -100,7 +100,7 @@ class Worker
         @status = Status::Connected
       else
         @status = Status::Disconnected
-        raise "Voice connection failure"
+        raise FailedToConnectError.new
       end
     end
 
@@ -211,6 +211,10 @@ class Worker
     private def play_sync(channel_id : UInt64) : Nil
       voice_connect(channel_id)
       start_play_loop
+    rescue exception : ConnectionLostError
+      send(t("audio_player.errors.connection_lost"), "danger")
+    rescue exception : FailedToConnectError
+      send(t("audio_player.errors.could_not_connect"), "danger")
     rescue exception
       Log.error(exception: exception) { "failure during playback" }
     ensure
