@@ -261,7 +261,7 @@ class Worker
     private def prepare_audio(audio : Audio) : Nil
       Log.debug { "preparing #{audio} for server##{@server_id}" }
 
-      sleep 2.seconds # TODO: call audio prepare algorithm
+      @worker.audio_preparer.prepare(audio)
     end
 
     private def send_audio_message(type : MessageType, audio : Audio) : UInt64?
