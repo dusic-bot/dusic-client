@@ -27,12 +27,6 @@ class Worker
       True
     end
 
-    enum AudioStopFlag
-      False
-      TruePreserveCurrent
-      True
-    end
-
     enum MessageType
       Loading
       FailedToLoad
@@ -41,7 +35,6 @@ class Worker
 
     @bot_id : UInt64 = Dusic.secrets["bot_id"].as_s.to_u64
     @loop_stop_flag : LoopStopFlag = LoopStopFlag::True
-    @track_stop_flag : AudioStopFlag = AudioStopFlag::True
     @current_audio_frames_count : UInt64 = 0
     @last_message : NamedTuple(channel_id: UInt64, message_id: UInt64)? = nil
     @play_fiber : Fiber? = nil
@@ -172,7 +165,6 @@ class Worker
     private def start_audio_play(audio : Audio) : Nil
       Log.debug { "playing #{audio} at server##{@server_id}" }
 
-      @track_stop_flag = AudioStopFlag::False
       @status = Status::Playing
       @current_audio = audio
 
@@ -181,7 +173,7 @@ class Worker
 
       if audio.ready?
         send_audio_message(MessageType::Playing, audio)
-        sleep 5.seconds # TODO: play audio, skipping @current_audio_frames_count
+        voice_client.try &.play(audio, skip_frames: @current_audio_frames_count)
       else
         send_audio_message(MessageType::FailedToLoad, audio)
         sleep AUDIO_LOAD_FAILED_TIMEOUT
@@ -189,13 +181,7 @@ class Worker
     rescue exception
       Log.error(exception: exception) { "failed playing #{audio} at server##{@server_id}" }
     ensure
-      if @track_stop_flag == AudioStopFlag::TruePreserveCurrent
-        @current_audio_frames_count = 0_u64 # TODO: actual value
-      else
-        @current_audio = nil
-      end
       @status = Status::Connected
-      @track_stop_flag = AudioStopFlag::False
 
       audio.destroy unless @queue.includes?(audio)
     end
@@ -203,7 +189,12 @@ class Worker
     private def stop_audio_play(preserve_current : Bool = false) : Nil
       Log.debug { "stopping current track at server##{@server_id}" }
 
-      @track_stop_flag = preserve_current ? AudioStopFlag::TruePreserveCurrent : AudioStopFlag::True
+      if preserve_current
+        @current_audio_frames_count = voice_client.try &.current_frame || 0_u64
+      else
+        @current_audio = nil
+      end
+      voice_client.try &.stop
     end
 
     private def play_async(channel_id : UInt64) : Nil
@@ -334,6 +325,14 @@ class Worker
 
     private def premium? : Bool
       server.premium?
+    end
+
+    private def voice_client : DiscordClient::VoiceClient?
+      client = @worker.discord_client.voice_client(@server_id)
+      if client.nil?
+        Log.warn { "voice client required for server##{@server_id}, but is nil" }
+      end
+      client
     end
   end
 end
