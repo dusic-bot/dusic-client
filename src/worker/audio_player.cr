@@ -183,7 +183,7 @@ class Worker
     ensure
       @status = Status::Connected
 
-      audio.destroy unless @queue.includes?(audio)
+      audio.destroy unless @queue.includes?(audio) || @current_audio == audio
     end
 
     private def stop_audio_play(preserve_current : Bool = false) : Nil
@@ -224,7 +224,7 @@ class Worker
     end
 
     private def prepare_current_audio(audio : Audio) : Nil
-      send_audio_message(MessageType::Loading, audio)
+      send_audio_message(MessageType::Loading, audio) unless audio.ready?
       prepare_audio(audio)
     end
 
