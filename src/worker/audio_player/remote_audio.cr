@@ -18,6 +18,11 @@ class Worker
         @file = new_file
       end
 
+      def load(&block : -> File) : Nil
+        @status = Status::Loading
+        file = yield
+      end
+
       def open(&block : IO -> Nil) : Nil
         begin
           io = File.open(file.not_nil!.path)
