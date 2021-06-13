@@ -40,3 +40,5 @@ audio_player:
       To start playback, connect to voice channel and call `play` command
     could_not_connect: |-
       Bot failed to connect to voice channel. Please check bot permissions
+    connection_lost: |-
+      Lost connection to voice channel
