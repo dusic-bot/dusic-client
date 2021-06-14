@@ -10,12 +10,13 @@ Spectator.describe Worker::MessageHandler do
 
     let(text) { "Sample text" }
     let(context) do
-      {author_id: author_id, author_roles_ids: author_roles_ids, server_id: server_id, channel_id: channel_id}
+      {author_id: author_id, author_roles_ids: author_roles_ids, server_id: server_id, channel_id: channel_id, voice_channel_id: voice_channel_id}
     end
     let(author_id) { 1_u64 }
     let(author_roles_ids) { [] of UInt64 }
     let(server_id) { 1_u64 }
     let(channel_id) { 1_u64 }
+    let(voice_channel_id) { nil }
 
     context "when it is not a command" do
       let(text) { "not a command" }

@@ -3,9 +3,10 @@ require "./audio"
 class Worker
   class AudioPlayer
     class RemoteAudio < Audio
+      @file : File? = nil
+
       getter manager : String
       getter id : String
-      getter file : File?
       getter status : Status
 
       def initialize(@manager, @id, *args)
@@ -13,17 +14,18 @@ class Worker
         super(*args)
       end
 
-      def file=(new_file : File) : File
-        @prepare_status = Status::Ready
-        @file = new_file
+      def load(&block : -> File?) : Nil
+        @status = Status::Loading
+        @file = yield
+        @status = @file ? Status::Ready : Status::Destroyed
       end
 
       def open(&block : IO -> Nil) : Nil
         begin
-          io = File.open(file.not_nil!.path)
+          io = File.open(@file.not_nil!.path)
           yield(io)
         rescue exception
-          Log.error(exception: exception) { "Failed to open remote audio `#{manager}##{id}`" }
+          Log.error(exception: exception) { "failed to open remote audio `#{manager}##{id}`" }
         ensure
           io.try &.close
         end
@@ -36,7 +38,7 @@ class Worker
         end
 
         @file = nil
-        @prepare_status = Status::Destroyed
+        @status = Status::Destroyed
       end
     end
   end

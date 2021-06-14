@@ -29,12 +29,7 @@ class Worker
         apply_audios_addition_option_aliases!
 
         if manager == Manager::None
-          if audio_player.queue.empty?
-            reply(t("commands.play.title"), t("audio_player.text.queue_is_empty"), "warning")
-          else
-            audio_player.play
-          end
-
+          play_or_reply_with_error
           return
         end
 

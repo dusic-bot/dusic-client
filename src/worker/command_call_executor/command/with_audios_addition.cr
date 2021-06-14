@@ -33,6 +33,19 @@ class Worker
           end
         end
 
+        private def play_or_reply_with_error : Nil
+          if audio_player.queue.empty?
+            reply(t("audio_player.title"), t("audio_player.text.queue_is_empty"), "warning")
+            return
+          end
+
+          if voice_channel_id = @command_call.voice_channel_id
+            audio_player.play(voice_channel_id)
+          else
+            reply(t("audio_player.title"), t("audio_player.errors.you_are_not_in_vc"), "warning")
+          end
+        end
+
         private def add_and_play(audios : AudioPlayer::AudioArray, title : String? = nil) : Nil
           audios.shuffle! if @command_call.options.has_key?("shuffle")
 
@@ -48,7 +61,7 @@ class Worker
 
           reply_to_added_audios(audios, title)
 
-          audio_player.play
+          play_or_reply_with_error
         end
       end
     end

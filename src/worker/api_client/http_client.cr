@@ -35,11 +35,11 @@ class Worker
         end
       end
 
-      def get_raw(subpath : String, body : String? = nil, &block : IO -> Nil) : Nil
+      def get_raw(subpath : String, body : String? = nil, &block : HTTP::Client::Response -> Nil) : Nil
         Log.debug { "GET #{subpath}: #{body}" }
         with_client do |client|
           client.get("/api/v2/#{subpath}", headers: @headers, body: body) do |response|
-            yield(response.body_io)
+            yield(response)
           end
         end
       end

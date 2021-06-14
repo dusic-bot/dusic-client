@@ -45,6 +45,10 @@ class Worker
         @queue[start, count]
       end
 
+      def first? : Audio?
+        @queue.first?
+      end
+
       def clear : Nil
         @queue.clear
       end
@@ -55,6 +59,10 @@ class Worker
 
       def shuffle : Nil
         @queue.shuffle!
+      end
+
+      def includes?(audio : Audio) : Bool
+        @queue.includes?(audio)
       end
 
       private def server : ApiClient::Mapping::Server

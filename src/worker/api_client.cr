@@ -41,14 +41,24 @@ class Worker
       @servers[server_id]
     end
 
-    def server_save(server) : Mapping::Server
+    def server_save(server : Mapping::Server) : Mapping::Server
       new_server = put_server(server)
       @servers[new_server.id] = new_server
+    end
+
+    def server_save(server_id : UInt64) : Mapping::Server
+      server = @servers[server_id]
+      server_save(server)
     end
 
     def vk_audios(query : String) : Mapping::AudioRequest
       # TODO: Caching?
       get_audios("vk", query, "auto")
+    end
+
+    def audio(manager : String, id : String, format : String) : File?
+      # TODO: Caching?
+      get_audio(manager, id, format)
     end
 
     private def get_servers : Array(Mapping::Server)
@@ -71,11 +81,21 @@ class Worker
       Mapping::AudioRequest.from_json(response)
     end
 
-    private def get_audio(manager : String, id : String, format : String, volume : UInt8) : File
-      File.tempfile("#{manager}_#{id}_#{format}_#{volume}") do |file_io|
-        @http_client.get_raw("audios/#{manager}/#{id}?format=#{format}&volume=#{volume}") do |io|
-          IO.copy(io, file_io)
+    private def get_audio(manager : String, id : String, format : String) : File?
+      success : Bool = true
+
+      file = File.tempfile("#{manager}_#{id}_#{format}") do |file_io|
+        @http_client.get_raw("audios/#{manager}/#{id}?format=#{format}") do |response|
+          success = response.success?
+          IO.copy(response.body_io, file_io) if success
         end
+      end
+
+      if success
+        file
+      else
+        file.delete
+        nil
       end
     end
 
@@ -88,7 +108,7 @@ class Worker
     private def publish_stats : Nil
       count = @worker.discord_client.servers_count
       cached = @servers.size
-      active = 0 # TODO: Count of active audio connections
+      active = @worker.audio_players_storage.active_count
       data = {
         action:               "connection_data",
         servers_count:        count,

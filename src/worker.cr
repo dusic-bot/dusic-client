@@ -14,6 +14,7 @@ class Worker
     "command_call_executor",
     "audio_players_storage",
     "audio_selections_storage",
+    "audio_preparer",
   ]
 
   @is_running : Bool = false
@@ -42,6 +43,7 @@ class Worker
 
   def stop : Nil
     Log.info { "stopping worker #{@shard_id}_#{@shard_num}" }
+    audio_players_storage.stop_all
     discord_client.stop
     api_client.stop
     @is_running = false

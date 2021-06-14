@@ -15,7 +15,7 @@ module Dusic::Misc
 
   # Wrapper around default `spawn` method
   # TODO: Currently it seems to have no use. Consider deleting
-  def spawn(name : String? = nil, same_thread : Bool = false, &block)
+  def spawn(name : String? = nil, same_thread : Bool = false, &block) : Fiber
     ::spawn(name: name, same_thread: same_thread, &block)
   end
 
@@ -43,5 +43,28 @@ module Dusic::Misc
     I18n.translate("color.#{key}").to_u32
   rescue ArgumentError
     nil
+  end
+
+  # Wrapper over I18n.translate
+  def t(
+    key : String,
+    options : Hash | NamedTuple? = nil,
+    force_locale = nil,
+    count = nil,
+    default = nil,
+    iter = nil,
+    &block : (-> String)
+  ) : String
+    locale : String = if force_locale
+      force_locale
+    else
+      block.call
+    end
+
+    I18n.translate(key, options, locale, count, default, iter)
+  end
+
+  def t(*args, **opts) : String
+    t(*args, **opts) { I18n.default_locale }
   end
 end

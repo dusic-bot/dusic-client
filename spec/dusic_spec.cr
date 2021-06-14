@@ -150,4 +150,22 @@ Spectator.describe Dusic do
       it { is_expected.to be_nil }
     end
   end
+
+  describe ".t" do
+    subject(result) { described_class.t(key) }
+
+    let(key) { "audio_player.title" }
+
+    it { is_expected.to eq("Аудио-плеер") }
+
+    context "when with block existing" do
+      subject(result) do
+        described_class.t(key) do
+          "en"
+        end
+      end
+
+      it { is_expected.to eq("Audio Player") }
+    end
+  end
 end

@@ -12,6 +12,7 @@ Spectator.describe Worker::CommandCall do
       author_roles_ids: [] of UInt64,
       server_id:        0_u64,
       channel_id:       0_u64,
+      voice_channel_id: nil,
     }
   end
 

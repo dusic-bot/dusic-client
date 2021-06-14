@@ -19,6 +19,7 @@ class Worker
     @bot_token : String = Dusic.secrets["bot_token"].as_s
     @default_prefix : String = Dusic.secrets["default_prefix"].as_s
     @log_channel_id : UInt64 = Dusic.secrets["log_channel_id"].as_s.to_u64
+    @voice_clients : Hash(UInt64, VoiceClient) = Hash(UInt64, VoiceClient).new
 
     def initialize(@worker : Worker)
       @client = Discord::Client.new(
@@ -52,6 +53,10 @@ class Worker
       @client.create_message(@log_channel_id, "`Shard##{@worker.shard_id + 1}/#{@worker.shard_num}`:\n#{message}")
     rescue
       Log.error { "failed to log message '#{message}' to Discord" }
+    end
+
+    def voice_client(server_id : UInt64) : VoiceClient?
+      @voice_clients[server_id]?
     end
 
     def send_dm(user_id : UInt64, text : String) : UInt64?
@@ -129,6 +134,33 @@ class Worker
       raise NotFoundError.new
     end
 
+    def voice_state_update(server_id : UInt64, channel_id : UInt64?) : Nil
+      @client.voice_state_update(server_id, channel_id, self_mute: false, self_deaf: true)
+    end
+
+    def user_voice_channel_id(server_id : UInt64, user_id : UInt64) : UInt64?
+      server_voice_states = cache.voice_states[server_id]?
+      return nil if server_voice_states.nil?
+
+      user_voice_state = server_voice_states[user_id]?
+      return nil if user_voice_state.nil?
+
+      user_voice_state.channel_id.try &.to_u64
+    end
+
+    def voice_channel_users(server_id : UInt64, voice_channel_id : UInt64) : Array(UInt64)
+      result = [] of UInt64
+
+      server_voice_states = cache.voice_states[server_id]?
+      return result if server_voice_states.nil?
+
+      server_voice_states.each do |user_id, voice_state|
+        result << user_id if voice_state.channel_id.try &.to_u64 == voice_channel_id
+      end
+
+      result
+    end
+
     private def cache : Discord::Cache
       @client.cache.not_nil!
     end
@@ -153,9 +185,20 @@ class Worker
       return if message.author.bot    # Ignore bots
       return if message.author.system # Ignore system messages
 
-      author_roles_ids : Array(UInt64) = [] of UInt64
-      if member = message.member
+      author_roles_ids : Array(UInt64) = if member = message.member
         member.roles.map &.to_u64
+      else
+        [] of UInt64
+      end
+
+      voice_channel_id : UInt64? = if guild_id = message.guild_id
+        begin
+          cache.resolve_voice_state(guild_id, message.author.id).channel_id.try &.to_u64
+        rescue KeyError
+          nil
+        end
+      else
+        nil
       end
 
       context = {
@@ -163,14 +206,29 @@ class Worker
         author_roles_ids: author_roles_ids,
         server_id:        message.guild_id.try &.to_u64 || 0_u64,
         channel_id:       message.channel_id.to_u64,
+        voice_channel_id: voice_channel_id,
       }
       command_calls = @worker.message_handler.handle(message.content, context)
       @worker.command_call_handler.handle(command_calls) unless command_calls.empty?
     end
 
     private def voice_server_update_handler(payload : Discord::Gateway::VoiceServerUpdatePayload) : Nil
-      Log.debug { "Voice server update" }
-      @worker.audio_players_storage.handle_voice_server_update(payload.guild_id.to_u64, payload.token, payload.endpoint)
+      if discord_session = @client.session
+        server_id = payload.guild_id.to_u64
+        discord_voice_client = Discord::VoiceClient.new(payload, discord_session, @bot_id)
+        discord_voice_client.on_ready do
+          if @voice_clients.has_key?(server_id)
+            Log.warn { "voice client already exists for server##{server_id}" }
+          end
+          @voice_clients[server_id] = VoiceClient.new(@worker, server_id, discord_voice_client)
+        end
+        discord_voice_client.run # NOTE: Blocks thread until websocket is closed
+        Log.debug { "voice connection closed at server##{server_id}" }
+        voice_client = @voice_clients.delete(server_id)
+        voice_client.try &.stop
+      else
+        Log.warn { "failed to handle voice server update for server##{payload.guild_id}: Discord session is nil" }
+      end
     end
 
     private def update_status : Nil
