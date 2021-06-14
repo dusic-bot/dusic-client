@@ -128,6 +128,12 @@ class Worker
       while @loop_stop_flag == LoopStopFlag::False
         @worker.api_client.server_save(server) if daily_outdated?
 
+        if voice_client.nil?
+          send(t("audio_player.errors.connection_lost"), "danger")
+          @loop_stop_flag = LoopStopFlag::True
+          next
+        end
+
         if autopause_enabled? && no_listeners?
           send(t("audio_player.text.autopause_warning"), "secondary")
           @loop_stop_flag = LoopStopFlag::True
@@ -172,12 +178,19 @@ class Worker
       prepare_next_audio
 
       if audio.ready?
-        send_audio_message(MessageType::Playing, audio)
-        voice_client.try &.play(audio, skip_frames: @current_audio_frames_count)
+        if local_voice_client = voice_client
+          send_audio_message(MessageType::Playing, audio)
+          local_voice_client.play(audio, skip_frames: @current_audio_frames_count)
+        else
+          raise ConnectionLostError.new
+        end
       else
         send_audio_message(MessageType::FailedToLoad, audio)
         sleep AUDIO_LOAD_FAILED_TIMEOUT
       end
+    rescue exception : ConnectionLostError
+      Log.debug { "connection lost at server##{@server_id}" }
+      raise exception # Will be caught in play_sync
     rescue exception
       Log.error(exception: exception) { "failed playing #{audio} at server##{@server_id}" }
     ensure
@@ -332,11 +345,7 @@ class Worker
     end
 
     private def voice_client : DiscordClient::VoiceClient?
-      client = @worker.discord_client.voice_client(@server_id)
-      if client.nil?
-        Log.warn { "voice client required for server##{@server_id}, but is nil" }
-      end
-      client
+      @worker.discord_client.voice_client(@server_id)
     end
   end
 end

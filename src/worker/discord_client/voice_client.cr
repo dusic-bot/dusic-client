@@ -4,6 +4,8 @@ class Worker
   class DiscordClient
     # Discord voice client facade
     class VoiceClient
+      IDEAL_INTERVAL = 20.milliseconds
+
       Log = Worker::Log.for("discord_voice_client")
 
       @stop_flag : Bool = false
@@ -44,7 +46,46 @@ class Worker
       end
 
       private def play_parser(parser : Discord::DCAParser, skip_frames : UInt64 = 0_u64) : Nil
-        sleep 5.seconds # TODO: play DCA parser
+        skip_frames.times do
+          parser.next_frame(reuse_buffer: true)
+          @current_frame += 1_u64
+        end
+
+        @client.send_speaking(true)
+
+        total_send_time = Time::Span.zero
+        start_time = Time.utc
+        start_frames_count = @current_frame
+
+        while !@stop_flag
+          send_time = Time.measure do
+            if frame = parser.next_frame(reuse_buffer: true)
+              @current_frame += 1_u64
+              @client.play_opus(frame)
+            else
+              @stop_flag = true
+            end
+          end
+          total_send_time += send_time
+
+          frames_passed = @current_frame - start_frames_count
+          time_passed = Time.utc - start_time
+          sleep_time : Time::Span = (IDEAL_INTERVAL * frames_passed - time_passed) - send_time
+          sleep({sleep_time, Time::Span.zero}.max)
+        end
+
+        total_play_time = Time.utc - start_time
+
+        Log.debug do
+          <<-TEXT
+          Finished playing.
+          Frames count: #{@current_frame}.
+          Send time: #{total_send_time}.
+          Average time per frame-send: #{total_send_time / @current_frame}.
+          Total playtime: #{total_play_time}.
+          Average time per frame-play: #{total_play_time / @current_frame}
+          TEXT
+        end
       end
     end
   end

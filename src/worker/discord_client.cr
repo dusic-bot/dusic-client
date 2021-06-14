@@ -224,7 +224,8 @@ class Worker
         end
         discord_voice_client.run # NOTE: Blocks thread until websocket is closed
         Log.debug { "voice connection closed at server##{server_id}" }
-        @voice_clients.delete(server_id)
+        voice_client = @voice_clients.delete(server_id)
+        voice_client.try &.stop
       else
         Log.warn { "failed to handle voice server update for server##{payload.guild_id}: Discord session is nil" }
       end
