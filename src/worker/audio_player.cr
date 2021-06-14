@@ -30,7 +30,7 @@ class Worker
 
     @bot_id : UInt64 = Dusic.secrets["bot_id"].as_s.to_u64
     @loop_stop_flag : Bool = false
-    @current_audio_frames_count : UInt64 = 0
+    @preserved_playback : NamedTuple(audio: Audio, frame: UInt64)? = nil
     @last_message : NamedTuple(channel_id: UInt64, message_id: UInt64)? = nil
     @play_fiber : Fiber? = nil
 
@@ -113,21 +113,18 @@ class Worker
       Log.debug { "starting play loop at server##{@server_id}" }
       @loop_stop_flag = false
 
-      # Resume suspended play
-      if audio = @current_audio
-        start_audio_play(audio)
-        @current_audio_frames_count = 0_u64
+      # NOTE: Preserved audio already saved in statistics
+      if preserved = @preserved_playback
+        start_audio_play(preserved[:audio], skip_frames: preserved[:frame])
+        @preserved_playback = nil
       end
 
-      # Main loop
       while !@loop_stop_flag
-        @worker.api_client.server_save(server) if daily_outdated?
+        # NOTE: do not do all the pre-play logic if connection is lost
+        raise ConnectionLostError.new if voice_client.nil?
 
-        if voice_client.nil?
-          send(t("audio_player.errors.connection_lost"), "danger")
-          @loop_stop_flag = true
-          next
-        end
+        # NOTE: reload cached server info
+        @worker.api_client.server_save(server) if daily_outdated?
 
         if autopause_enabled? && no_listeners?
           send(t("audio_player.text.autopause_warning"), "secondary")
@@ -152,8 +149,7 @@ class Worker
       end
     ensure
       @loop_stop_flag = false
-      @status = Status::Connected
-      delete_last_audio_message
+
       @worker.api_client.server_save(server)
       Log.debug { "play loop finished at server##{@server_id}" }
     end
@@ -163,19 +159,22 @@ class Worker
       @loop_stop_flag = true
     end
 
-    private def start_audio_play(audio : Audio) : Nil
+    private def start_audio_play(audio : Audio, skip_frames : UInt64 = 0_u64) : Nil
       Log.debug { "playing #{audio} at server##{@server_id}" }
 
       @status = Status::Playing
       @current_audio = audio
 
-      prepare_current_audio(audio)
+      send_audio_message(MessageType::Loading, audio) unless audio.ready?
+      prepare_audio(audio)
+
+      # NOTE: async execution
       prepare_next_audio
 
       if audio.ready?
         if local_voice_client = voice_client
           send_audio_message(MessageType::Playing, audio)
-          local_voice_client.play(audio, skip_frames: @current_audio_frames_count)
+          local_voice_client.play(audio, skip_frames: skip_frames)
         else
           raise ConnectionLostError.new
         end
@@ -190,17 +189,23 @@ class Worker
       Log.error(exception: exception) { "failed playing #{audio} at server##{@server_id}" }
     ensure
       @status = Status::Connected
+      @current_audio = nil
+      delete_last_audio_message
 
-      audio.destroy unless @queue.includes?(audio) || @current_audio == audio
+      preserved = @preserved_playback
+      audio.destroy unless @queue.includes?(audio) || (preserved && preserved[:audio] == audio)
     end
 
     private def stop_audio_play(preserve_current : Bool = false) : Nil
       Log.debug { "stopping current track at server##{@server_id}" }
 
       if preserve_current
-        @current_audio_frames_count = voice_client.try &.current_frame || 0_u64
-      else
-        @current_audio = nil
+        if audio = @current_audio
+          @preserved_playback = {audio: audio, frame: voice_client.try &.current_frame || 0_u64}
+        else
+          Log.warn { "couldn't preserve current track since it is nil" }
+          @preserved_playback = nil
+        end
       end
       voice_client.try &.stop
     end
@@ -233,11 +238,6 @@ class Worker
       Dusic.await(AUDIO_AWAIT_TIMEOUT, AUDIO_AWAIT_CHECK_INTERVAL) do
         audio.status != Audio::Status::Loading
       end
-    end
-
-    private def prepare_current_audio(audio : Audio) : Nil
-      send_audio_message(MessageType::Loading, audio) unless audio.ready?
-      prepare_audio(audio)
     end
 
     private def prepare_next_audio : Nil
