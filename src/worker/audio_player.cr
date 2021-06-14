@@ -7,7 +7,7 @@ class Worker
     CONNECTION_CHECK_INTERVAL = 500.milliseconds
     AUDIO_LOAD_FAILED_TIMEOUT = 3.seconds
     AUDIO_PLAY_INTERVAL       = 1.second
-    PLAY_STOP_AWAIT           = 5.seconds
+    PLAY_STOP_AWAIT           = 10.seconds
     PLAY_STOP_CHECK_INTERVAL  = 500.milliseconds
 
     Log = Worker::Log.for("audio_player")
@@ -30,6 +30,7 @@ class Worker
 
     @bot_id : UInt64 = Dusic.secrets["bot_id"].as_s.to_u64
     @loop_stop_flag : Bool = false
+    @audio_stop_flag : Bool = false
     @preserved_playback : NamedTuple(audio: Audio, frame: UInt64)? = nil
     @last_message : NamedTuple(channel_id: UInt64, message_id: UInt64)? = nil
     @play_fiber : Fiber? = nil
@@ -64,11 +65,13 @@ class Worker
       stop_audio_play(preserve_current: false)
     end
 
-    def stop(preserve_current : Bool = false) : Nil
+    def stop(preserve_current : Bool = false, await_fiber : Bool = false) : Nil
       return if disconnected?
 
       stop_play_loop
       stop_audio_play(preserve_current: preserve_current)
+      return unless await_fiber
+
       if play_fiber = @play_fiber
         finished_properly = Dusic.await(PLAY_STOP_AWAIT, PLAY_STOP_CHECK_INTERVAL) { play_fiber.dead? }
         Log.warn { "play fiber at server##{@server_id} didn't finish properly" } unless finished_properly
@@ -164,9 +167,11 @@ class Worker
 
       @status = Status::Playing
       @current_audio = audio
+      @audio_stop_flag = false
 
       send_audio_message(MessageType::Loading, audio) unless audio.ready?
       prepare_audio(audio)
+      return if @audio_stop_flag
 
       # NOTE: async execution
       prepare_next_audio
@@ -190,6 +195,7 @@ class Worker
     ensure
       @status = Status::Connected
       @current_audio = nil
+      @audio_stop_flag = false
       delete_last_audio_message
 
       preserved = @preserved_playback
@@ -199,6 +205,7 @@ class Worker
     private def stop_audio_play(preserve_current : Bool = false) : Nil
       Log.debug { "stopping current track at server##{@server_id}" }
 
+      @audio_stop_flag = true
       if preserve_current
         if audio = @current_audio
           @preserved_playback = {audio: audio, frame: voice_client.try &.current_frame || 0_u64}

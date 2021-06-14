@@ -23,7 +23,7 @@ class Worker
       Log.debug { "Stopping #{@audio_players.size} audio players" }
       @audio_players.each do |id, player|
         begin
-          player.stop
+          player.stop(await_fiber: true)
         rescue exception
           Log.warn(exception: exception) { "Failed to gracefully stop audio player for server #{id}" }
         end
