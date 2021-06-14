@@ -56,7 +56,7 @@ class Worker
       get_audios("vk", query, "auto")
     end
 
-    def audio(manager : String, id : String, format : String) : File
+    def audio(manager : String, id : String, format : String) : File?
       # TODO: Caching?
       get_audio(manager, id, format)
     end
@@ -81,11 +81,21 @@ class Worker
       Mapping::AudioRequest.from_json(response)
     end
 
-    private def get_audio(manager : String, id : String, format : String) : File
-      File.tempfile("#{manager}_#{id}_#{format}") do |file_io|
-        @http_client.get_raw("audios/#{manager}/#{id}?format=#{format}") do |io|
-          IO.copy(io, file_io)
+    private def get_audio(manager : String, id : String, format : String) : File?
+      success : Bool = true
+
+      file = File.tempfile("#{manager}_#{id}_#{format}") do |file_io|
+        @http_client.get_raw("audios/#{manager}/#{id}?format=#{format}") do |response|
+          success = response.success?
+          IO.copy(response.body_io, file_io) if success
         end
+      end
+
+      if success
+        file
+      else
+        file.delete
+        nil
       end
     end
 

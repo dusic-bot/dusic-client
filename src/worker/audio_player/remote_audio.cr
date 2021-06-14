@@ -14,10 +14,10 @@ class Worker
         super(*args)
       end
 
-      def load(&block : -> File) : Nil
+      def load(&block : -> File?) : Nil
         @status = Status::Loading
         @file = yield
-        @status = Status::Ready
+        @status = @file ? Status::Ready : Status::Destroyed
       end
 
       def open(&block : IO -> Nil) : Nil
