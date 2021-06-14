@@ -22,11 +22,6 @@ class Worker
       Disconnecting
     end
 
-    enum LoopStopFlag
-      False
-      True
-    end
-
     enum MessageType
       Loading
       FailedToLoad
@@ -34,7 +29,7 @@ class Worker
     end
 
     @bot_id : UInt64 = Dusic.secrets["bot_id"].as_s.to_u64
-    @loop_stop_flag : LoopStopFlag = LoopStopFlag::True
+    @loop_stop_flag : Bool = false
     @current_audio_frames_count : UInt64 = 0
     @last_message : NamedTuple(channel_id: UInt64, message_id: UInt64)? = nil
     @play_fiber : Fiber? = nil
@@ -116,7 +111,7 @@ class Worker
 
     private def start_play_loop : Nil
       Log.debug { "starting play loop at server##{@server_id}" }
-      @loop_stop_flag = LoopStopFlag::False
+      @loop_stop_flag = false
 
       # Resume suspended play
       if audio = @current_audio
@@ -125,25 +120,25 @@ class Worker
       end
 
       # Main loop
-      while @loop_stop_flag == LoopStopFlag::False
+      while !@loop_stop_flag
         @worker.api_client.server_save(server) if daily_outdated?
 
         if voice_client.nil?
           send(t("audio_player.errors.connection_lost"), "danger")
-          @loop_stop_flag = LoopStopFlag::True
+          @loop_stop_flag = true
           next
         end
 
         if autopause_enabled? && no_listeners?
           send(t("audio_player.text.autopause_warning"), "secondary")
-          @loop_stop_flag = LoopStopFlag::True
+          @loop_stop_flag = true
           next
         end
 
         if time_limit_hit?
           Log.info { "playback time limit hit at server##{@server_id}" }
           send(t("audio_player.text.time_limit_warning"), "secondary")
-          @loop_stop_flag = LoopStopFlag::True
+          @loop_stop_flag = true
           next
         end
 
@@ -152,11 +147,11 @@ class Worker
           start_audio_play(audio)
           sleep AUDIO_PLAY_INTERVAL
         else
-          @loop_stop_flag = LoopStopFlag::True
+          @loop_stop_flag = true
         end
       end
     ensure
-      @loop_stop_flag = LoopStopFlag::False
+      @loop_stop_flag = false
       @status = Status::Connected
       delete_last_audio_message
       @worker.api_client.server_save(server)
@@ -165,7 +160,7 @@ class Worker
 
     private def stop_play_loop : Nil
       Log.debug { "stopping play loop at server##{@server_id}" }
-      @loop_stop_flag = LoopStopFlag::True
+      @loop_stop_flag = true
     end
 
     private def start_audio_play(audio : Audio) : Nil
