@@ -24,7 +24,8 @@ class Worker
         Log.debug { "playing #{audio} (skip: #{skip_frames}) at server##{@server_id}" }
 
         unless audio.ready?
-          Log.warn { "attempting to play #{audio} with status #{audio.status} at server##{@server_id}" }
+          Log.warn { "attempted to play #{audio} with status #{audio.status} at server##{@server_id}" }
+          return
         end
 
         audio.open { |io| play_dca(io, skip_frames: skip_frames) }
