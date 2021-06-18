@@ -3,7 +3,7 @@
 # config valid for current version and patch releases of Capistrano
 lock '~> 3.16.0'
 
-set :application, 'Dusic client'
+set :application, 'Dusic-client'
 set :repo_url, 'git@example.com:dusic-bot/dusic-client.git'
 
 # Default branch is :master
