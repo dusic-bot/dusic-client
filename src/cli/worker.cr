@@ -32,7 +32,7 @@ puts <<-TEXT
   TEXT
 
 # Save PID
-pid_path = "tmp/pids/worker_#{shard_id}_#{shard_num}"
+pid_path = "tmp/pids/worker_#{Dusic.env_s}_#{shard_id}_#{shard_num}"
 File.write(pid_path, Process.pid)
 
 # Initialize worker
