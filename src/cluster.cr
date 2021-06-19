@@ -1,9 +1,9 @@
 require "yaml"
 require "log"
 
-class Cluster
-  alias WorkerData = NamedTuple(env: String, shard_id: Int32, shard_num: Int32, log: String)
+require "./cluster/*"
 
+class Cluster
   Log = ::Log.for("cluster")
 
   @workers : Array(WorkerData) = [] of WorkerData
@@ -15,13 +15,21 @@ class Cluster
   def run : Nil
     Log.info { "Starting cluster" }
 
-    # TODO
+    @workers.each do |worker_data|
+      start_worker(worker_data)
+    end
+
+    @workers.each do |worker_data|
+      await_worker(worker_data)
+    end
   end
 
   def stop : Nil
     Log.info { "Stopping cluster" }
 
-    # TODO
+    @workers.each do |worker_data|
+      stop_worker(worker_data)
+    end
   end
 
   private def load_configuration(config_path : String) : Nil
@@ -36,11 +44,44 @@ class Cluster
   end
 
   private def parse_worker_configuration(worker_config : YAML::Any) : WorkerData
-    {
-      env: worker_config["log"].as_s,
-      shard_id: worker_config["shard_id"].as_i,
-      shard_num: worker_config["shard_num"].as_i,
-      log: worker_config["log"].as_s
-    }
+    WorkerData.new(
+      worker_config["env"].as_s,
+      worker_config["shard_id"].as_i,
+      worker_config["shard_num"].as_i,
+      worker_config["log"].as_s
+    )
+  end
+
+  private def start_worker(worker_data : WorkerData) : Nil
+    process = Process.new(
+      "bin/worker",
+      ["-i", worker_data.shard_id.to_s, "-n", worker_data.shard_num.to_s],
+      { "ENV" => worker_data.env },
+      output: File.open("log/#{worker_data.log}.log", "w")
+    )
+    worker_data.process = process
+
+    Log.info { "Started worker with PID #{worker_data.pid}" }
+  end
+
+  private def await_worker(worker_data : WorkerData) : Nil
+    if process = worker_data.process
+      pid = process.pid
+      process.wait
+
+      Log.info { "Worker with PID #{pid} finished" }
+    else
+      Log.warn { "Skipping worker since process is nil" }
+    end
+  end
+
+  private def stop_worker(worker_data : WorkerData) : Nil
+    if pid = worker_data.pid
+      Process.signal(Signal::INT, pid)
+
+      Log.info { "Stopped worker with PID #{pid}" }
+    else
+      Log.warn { "Skipping worker since process is nil" }
+    end
   end
 end
