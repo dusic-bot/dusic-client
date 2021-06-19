@@ -22,7 +22,10 @@ secrets: shards
 worker: shards
 	shards build worker --no-debug --release --production
 
+cluster:
+	shards build cluster --no-debug --release --production
+
 run:
 	crystal run src/cli/worker.cr
 
-all: secrets worker
+all: secrets worker cluster
