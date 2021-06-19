@@ -13,8 +13,6 @@ log_backend =
   case Dusic.env
   when Dusic::Environment::Test
     Log::IOBackend.new(File.new("./log/#{Dusic.env_s}.log", "w"), dispatcher: :sync)
-  when Dusic::Environment::Production, Dusic::Environment::Canary
-    Log::IOBackend.new(File.new("./log/#{Dusic.env_s}.log", "w"), dispatcher: :async)
   else
     Log::IOBackend.new
   end
