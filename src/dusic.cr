@@ -1,15 +1,24 @@
 # Setup shards
 require "log"
-log_severity = if Dusic.env == Dusic::Environment::Production
-                 Log::Severity::Info
-               else
-                 Log::Severity::Debug
-               end
-log_backend = if Dusic.env == Dusic::Environment::Test
-                Log::IOBackend.new(File.new("./log/#{Dusic.env_s}.log", "w"), dispatcher: :sync)
-              else
-                Log::IOBackend.new
-              end
+
+log_severity =
+  case Dusic.env
+  when Dusic::Environment::Production, Dusic::Environment::Canary
+    Log::Severity::Info
+  else
+    Log::Severity::Debug
+  end
+
+log_backend =
+  case Dusic.env
+  when Dusic::Environment::Test
+    Log::IOBackend.new(File.new("./log/#{Dusic.env_s}.log", "w"), dispatcher: :sync)
+  when Dusic::Environment::Production, Dusic::Environment::Canary
+    Log::IOBackend.new(File.new("./log/#{Dusic.env_s}.log", "w"), dispatcher: :async)
+  else
+    Log::IOBackend.new
+  end
+
 Log.setup(log_severity, log_backend)
 
 require "i18n"
