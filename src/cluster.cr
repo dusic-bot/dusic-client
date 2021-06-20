@@ -56,7 +56,7 @@ class Cluster
     process = Process.new(
       "bin/worker",
       ["-i", worker_data.shard_id.to_s, "-n", worker_data.shard_num.to_s],
-      { "ENV" => worker_data.env },
+      {"ENV" => worker_data.env},
       output: File.open("log/#{worker_data.log}.log", "w")
     )
     worker_data.process = process
