@@ -2,10 +2,5 @@ workers:
   -
     env: "canary"
     shard_id: 0
-    shard_num: 2
-    log: "canary_0_2"
-  -
-    env: "canary"
-    shard_id: 1
-    shard_num: 2
-    log: "canary_1_2"
+    shard_num: 1
+    log: "canary_0_1"
