@@ -6,3 +6,5 @@ commands:
     errors:
       unavailable_in_dm: Playback is only available in guilds
       call_play_first: Call `play SEARCH QUEUE` to initiate audio search
+      not_authorized: |-
+        This command can only be executed by server DJs

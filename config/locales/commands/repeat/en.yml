@@ -7,5 +7,5 @@ commands:
         other: "`%{count}` tracks added to queue"
     errors:
       unavailable_in_dm: Playback is only available in guilds
-      only_available_for_dj: This command can only be executed by server DJs
+      not_authorized: This command can only be executed by server DJs
       nothing_is_playing: Nothing is playing

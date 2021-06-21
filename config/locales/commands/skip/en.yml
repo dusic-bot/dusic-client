@@ -11,5 +11,5 @@ commands:
         Playback and audio queue are only available in guilds
       incorrect_arguments: |-
         Check whether arguments are correct. Read more: `help skip`
-      only_available_for_dj: |-
+      not_authorized: |-
         This command can only be executed by server DJs

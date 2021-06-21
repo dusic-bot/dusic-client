@@ -7,5 +7,5 @@ commands:
     errors:
       unavailable_in_dm: |-
         Playback and audio queue are only available in guilds
-      only_available_for_dj: |-
+      not_authorized: |-
         This command can only be executed by server DJs
