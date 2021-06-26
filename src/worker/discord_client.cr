@@ -215,17 +215,18 @@ class Worker
     private def voice_server_update_handler(payload : Discord::Gateway::VoiceServerUpdatePayload) : Nil
       if discord_session = @client.session
         server_id = payload.guild_id.to_u64
+        Log.debug { "creating new voice client for server##{server_id}" }
+
         discord_voice_client = Discord::VoiceClient.new(payload, discord_session, @bot_id)
         discord_voice_client.on_ready do
-          if @voice_clients.has_key?(server_id)
-            Log.warn { "voice client already exists for server##{server_id}" }
+          if current_voice_client = @voice_clients[server_id]?
+            current_voice_client.client = discord_voice_client
+          else
+            @voice_clients[server_id] = VoiceClient.new(@worker, server_id, discord_voice_client)
           end
-          @voice_clients[server_id] = VoiceClient.new(@worker, server_id, discord_voice_client)
         end
         discord_voice_client.run # NOTE: Blocks thread until websocket is closed
         Log.debug { "voice connection closed at server##{server_id}" }
-        voice_client = @voice_clients.delete(server_id)
-        voice_client.try &.stop
       else
         Log.warn { "failed to handle voice server update for server##{payload.guild_id}: Discord session is nil" }
       end
