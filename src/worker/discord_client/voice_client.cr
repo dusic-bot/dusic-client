@@ -11,6 +11,7 @@ class Worker
       @stop_flag : Bool = false
 
       getter current_frame : UInt64
+      getter client : Discord::VoiceClient
 
       # NOTE: Discord voice client must be running and ready
       def initialize(@worker : Worker, @server_id : UInt64, @client : Discord::VoiceClient)

@@ -12,6 +12,7 @@ class Worker
     INTENTS = Discord::Gateway::Intents::Guilds | Discord::Gateway::Intents::GuildVoiceStates |
               Discord::Gateway::Intents::GuildMessages | Discord::Gateway::Intents::DirectMessages
     STATUS_UPDATE_INTERVAL = 15.minutes
+    VOICE_RECONNECTION_AWAIT = 2.seconds
 
     @is_running : Bool = false
 
@@ -227,6 +228,13 @@ class Worker
         end
         discord_voice_client.run # NOTE: Blocks thread until websocket is closed
         Log.debug { "voice connection closed at server##{server_id}" }
+
+        # NOTE: Need to ensure that client with closed WVS is stopped and deleted from memory
+        sleep VOICE_RECONNECTION_AWAIT
+        if discord_voice_client == @voice_clients[server_id]?.try &.client
+          voice_client = @voice_clients.delete(server_id)
+          voice_client.try &.stop
+        end
       else
         Log.warn { "failed to handle voice server update for server##{payload.guild_id}: Discord session is nil" }
       end
