@@ -5,7 +5,9 @@
 # Defines a single server with a list of roles and multiple properties.
 # You can define all roles on a single server, or split them:
 
-# server 'IP:2232', user: 'dusic', roles: %w[app]
+server '2.57.187.125:2232', user: 'dusic', roles: %w[app]
+server '2.57.187.121:2232', user: 'dusic', roles: %w[app]
+server '2.57.186.229:2232', user: 'dusic', roles: %w[app]
 
 # role-based syntax
 # ==================

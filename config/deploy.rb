@@ -23,7 +23,7 @@ set :deploy_to, '/home/dusic/dusic-client'
 # set :pty, true
 
 # Default value for :linked_files is []
-append :linked_files, 'config/secrets/canary.key', 'config/secrets/production.key'
+append :linked_files, "config/secrets/#{fetch(:stage)}.key"
 
 # Default value for linked_dirs is []
 append :linked_dirs, 'bin', 'docs', 'log', 'tmp'
