@@ -11,10 +11,18 @@ class Worker
       @stop_flag : Bool = false
 
       getter current_frame : UInt64
+      getter client : Discord::VoiceClient
 
       # NOTE: Discord voice client must be running and ready
       def initialize(@worker : Worker, @server_id : UInt64, @client : Discord::VoiceClient)
         @current_frame = 0_u64
+      end
+
+      def client=(client : Discord::VoiceClient) : Discord::VoiceClient
+        @client = client
+        send_speaking
+
+        @client
       end
 
       def play(audio : AudioPlayer::Audio, skip_frames : UInt64 = 0_u64) : Nil
@@ -52,7 +60,7 @@ class Worker
           @current_frame += 1_u64
         end
 
-        @client.send_speaking(true)
+        send_speaking
 
         total_send_time = Time::Span.zero
         start_time = Time.utc
@@ -87,6 +95,10 @@ class Worker
           Average time per frame-play: #{total_play_time / @current_frame}
           TEXT
         end
+      end
+
+      private def send_speaking : Nil
+        @client.send_speaking(true)
       end
     end
   end

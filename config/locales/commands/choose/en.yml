@@ -8,3 +8,5 @@ commands:
       call_play_first: Call `play SEARCH QUEUE` to initiate audio search
       nothing_selected:
         Please, select audios with `select NUMBER` command or cancel selection with `cancel`
+      not_authorized: |-
+        This command can only be executed by server DJs

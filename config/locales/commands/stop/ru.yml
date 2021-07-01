@@ -6,5 +6,5 @@ commands:
     errors:
       unavailable_in_dm: |-
         Проигрывание музыки и просмотр очереди доступны только на серверах
-      only_available_for_dj: |-
+      not_authorized: |-
         Данная команда доступна только пользователям с DJ-ролью

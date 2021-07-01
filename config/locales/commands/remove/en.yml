@@ -11,5 +11,5 @@ commands:
         Audio queue is only available in guilds
       incorrect_arguments: |-
         Check whether arguments are correct. Read more: `help remove`
-      only_available_for_dj: |-
+      not_authorized: |-
         This command can only be executed by server DJs

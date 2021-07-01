@@ -16,3 +16,5 @@ commands:
         To start playback, connect to voice channel and call `play` command
       yt_unavailable: Youtube music is temporary unavailable
       vk_unavailable: VK music is temporary unavailable
+      not_authorized: |-
+        This command can only be executed by server DJs

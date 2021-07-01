@@ -19,6 +19,8 @@ authors:
 targets:
   worker:
     main: src/cli/worker.cr
+  cluster:
+    main: src/cli/cluster.cr
   secrets:
     main: src/cli/secrets.cr
 

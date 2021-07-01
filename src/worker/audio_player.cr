@@ -145,7 +145,7 @@ class Worker
         if audio = queue.shift(1).first?
           add_audio_to_statistic(audio)
           start_audio_play(audio)
-          sleep AUDIO_PLAY_INTERVAL
+          sleep AUDIO_PLAY_INTERVAL unless @loop_stop_flag
         else
           @loop_stop_flag = true
         end

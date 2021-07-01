@@ -141,11 +141,16 @@ class Worker
 
       server.last_donation = donation
 
-      @worker.discord_client.log("Registered donation##{donation.id}")
-
       user_id = donation.user_id
-      server_name = @worker.discord_client.server_name(server_id)
-      if user_id
+      server_name : String? = begin
+        @worker.discord_client.server_name(server_id)
+      rescue
+        nil
+      end
+
+      if user_id && server_name
+        @worker.discord_client.log("Registered donation##{donation.id}")
+
         text = I18n.translate("message.donation", {server_name: server_name}, server.setting.language)
         @worker.discord_client.send_dm(user_id, text)
       end
