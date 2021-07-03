@@ -26,7 +26,7 @@ set :deploy_to, '/home/dusic/dusic-client'
 append :linked_files, "config/secrets/#{fetch(:stage)}.key"
 
 # Default value for linked_dirs is []
-append :linked_dirs, 'bin', 'docs', 'log', 'tmp'
+append :linked_dirs, 'bin', 'docs', 'log', 'tmp/pids'
 
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
