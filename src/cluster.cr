@@ -4,6 +4,8 @@ require "log"
 require "./cluster/*"
 
 class Cluster
+  WORKER_START_INTERVAL = 2.seconds
+
   Log = ::Log.for("cluster")
 
   @workers : Array(WorkerData) = [] of WorkerData
@@ -17,6 +19,7 @@ class Cluster
 
     @workers.each do |worker_data|
       start_worker(worker_data)
+      sleep WORKER_START_INTERVAL
     end
 
     @workers.each do |worker_data|
