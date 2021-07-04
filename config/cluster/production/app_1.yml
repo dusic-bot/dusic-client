@@ -59,23 +59,3 @@ workers:
     shard_id: 11
     shard_num: 48
     log: "production_11_48"
-  -
-    env: "production"
-    shard_id: 12
-    shard_num: 48
-    log: "production_12_48"
-  -
-    env: "production"
-    shard_id: 13
-    shard_num: 48
-    log: "production_13_48"
-  -
-    env: "production"
-    shard_id: 14
-    shard_num: 48
-    log: "production_14_48"
-  -
-    env: "production"
-    shard_id: 15
-    shard_num: 48
-    log: "production_15_48"

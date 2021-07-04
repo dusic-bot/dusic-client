@@ -8,6 +8,7 @@
 server '2.57.187.125:2232', user: 'dusic', roles: %w[app]
 server '2.57.187.121:2232', user: 'dusic', roles: %w[app]
 server '2.57.186.229:2232', user: 'dusic', roles: %w[app]
+server '2.57.186.136:2232', user: 'dusic', roles: %w[app]
 
 # role-based syntax
 # ==================
