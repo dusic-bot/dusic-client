@@ -1,0 +1,61 @@
+workers:
+  -
+    env: "production"
+    shard_id: 24
+    shard_num: 48
+    log: "production_24_48"
+  -
+    env: "production"
+    shard_id: 25
+    shard_num: 48
+    log: "production_25_48"
+  -
+    env: "production"
+    shard_id: 26
+    shard_num: 48
+    log: "production_26_48"
+  -
+    env: "production"
+    shard_id: 27
+    shard_num: 48
+    log: "production_27_48"
+  -
+    env: "production"
+    shard_id: 28
+    shard_num: 48
+    log: "production_28_48"
+  -
+    env: "production"
+    shard_id: 29
+    shard_num: 48
+    log: "production_29_48"
+  -
+    env: "production"
+    shard_id: 30
+    shard_num: 48
+    log: "production_30_48"
+  -
+    env: "production"
+    shard_id: 31
+    shard_num: 48
+    log: "production_31_48"
+  -
+    env: "production"
+    shard_id: 32
+    shard_num: 48
+    log: "production_32_48"
+  -
+    env: "production"
+    shard_id: 33
+    shard_num: 48
+    log: "production_33_48"
+  -
+    env: "production"
+    shard_id: 34
+    shard_num: 48
+    log: "production_34_48"
+  -
+    env: "production"
+    shard_id: 35
+    shard_num: 48
+    log: "production_35_48"
