@@ -87,7 +87,7 @@ class Worker
 
         Log.debug do
           <<-TEXT
-          Finished playing.
+          playback finished:
           Frames count: #{@current_frame}.
           Send time: #{total_send_time}.
           Average time per frame-send: #{total_send_time / @current_frame}.

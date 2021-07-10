@@ -20,7 +20,7 @@ class Worker
     def handle(text : String, context : CommandCall::Context) : Array(CommandCall)
       # NOTE: this method might return array of command calls in future. For instance:
       #   handle("!help\n!help") # => [CommandCall, CommandCall]
-      Log.debug { "Handling text: #{text.inspect}" }
+      Log.debug { "handling text: #{text.inspect}" }
 
       text = text.strip
       prefix = find_prefix(text, context[:server_id])

@@ -20,12 +20,12 @@ class Worker
     end
 
     def stop_all : Nil
-      Log.debug { "Stopping #{@audio_players.size} audio players" }
+      Log.debug { "stopping #{@audio_players.size} audio players" }
       @audio_players.each do |id, player|
         begin
           player.stop(await_fiber: true)
         rescue exception
-          Log.warn(exception: exception) { "Failed to gracefully stop audio player for server #{id}" }
+          Log.warn(exception: exception) { "failed to gracefully stop audio player for server #{id}" }
         end
       end
     end

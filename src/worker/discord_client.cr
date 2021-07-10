@@ -86,14 +86,14 @@ class Worker
 
       @client.create_message(channel_id, "", embed).id.to_u64
     rescue exception : Discord::CodeException
-      Log.error(exception: exception) { "Can not send message into channel##{channel_id}" }
+      Log.error(exception: exception) { "can not send message into channel##{channel_id}" }
       nil
     end
 
     def delete_message(channel_id : UInt64, message_id : UInt64) : Nil
       @client.delete_message(channel_id, message_id)
     rescue exception : Discord::CodeException
-      Log.error(exception: exception) { "Can not delete message##{channel_id}" }
+      Log.error(exception: exception) { "can not delete message##{channel_id}" }
     end
 
     def server_name(server_id : UInt64) : String
@@ -167,7 +167,7 @@ class Worker
     end
 
     private def ready_handler(payload : Discord::Gateway::ReadyPayload) : Nil
-      Log.info { "Ready event" }
+      Log.info { "ready event" }
 
       Dusic.spawn do
         while @is_running
@@ -178,7 +178,7 @@ class Worker
     end
 
     private def guild_create_handler(payload : Discord::Gateway::GuildCreatePayload) : Nil
-      Log.info { "New server" }
+      Log.info { "new server" }
     end
 
     private def message_create_handler(message : Discord::Message) : Nil
@@ -254,7 +254,7 @@ class Worker
         )
       )
     rescue exception
-      Log.error { "Failed to update Discord status: #{exception.message}" }
+      Log.error { "failed to update Discord status: #{exception.message}" }
     end
   end
 end

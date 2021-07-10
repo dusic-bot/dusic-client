@@ -15,7 +15,7 @@ class Cluster
   end
 
   def run : Nil
-    Log.info { "Starting cluster" }
+    Log.info { "starting cluster" }
 
     @workers.each do |worker_data|
       start_worker(worker_data)
@@ -28,7 +28,7 @@ class Cluster
   end
 
   def stop : Nil
-    Log.info { "Stopping cluster" }
+    Log.info { "stopping cluster" }
 
     @workers.each do |worker_data|
       stop_worker(worker_data)
@@ -36,14 +36,14 @@ class Cluster
   end
 
   private def load_configuration(config_path : String) : Nil
-    Log.debug { "Loading configuration from #{config_path}" }
+    Log.debug { "loading configuration from #{config_path}" }
 
     config = YAML.parse(File.read(config_path))
     config["workers"].as_a.each do |worker_config|
       @workers << parse_worker_configuration(worker_config)
     end
 
-    Log.info { "Loaded configuration for #{@workers.size} workers" }
+    Log.info { "loaded configuration for #{@workers.size} workers" }
   end
 
   private def parse_worker_configuration(worker_config : YAML::Any) : WorkerData
@@ -64,7 +64,7 @@ class Cluster
     )
     worker_data.process = process
 
-    Log.info { "Started worker with PID #{worker_data.pid}" }
+    Log.info { "started worker with PID #{worker_data.pid}" }
   end
 
   private def await_worker(worker_data : WorkerData) : Nil
@@ -72,9 +72,9 @@ class Cluster
       pid = process.pid
       process.wait
 
-      Log.info { "Worker with PID #{pid} finished" }
+      Log.info { "worker with PID #{pid} finished" }
     else
-      Log.warn { "Skipping worker since process is nil" }
+      Log.warn { "skipping worker since process is nil" }
     end
   end
 
@@ -82,9 +82,9 @@ class Cluster
     if pid = worker_data.pid
       Process.signal(Signal::INT, pid)
 
-      Log.info { "Stopped worker with PID #{pid}" }
+      Log.info { "stopped worker with PID #{pid}" }
     else
-      Log.warn { "Skipping worker since process is nil" }
+      Log.warn { "skipping worker since process is nil" }
     end
   end
 end

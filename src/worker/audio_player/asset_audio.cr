@@ -18,7 +18,7 @@ class Worker
           file = File.open("./assets/dca/#{asset_name}.dca", "rb")
           yield(file)
         rescue exception
-          Log.error(exception: exception) { "Failed to open asset `#{asset_name}`" }
+          Log.error(exception: exception) { "failed to open asset `#{asset_name}`" }
         ensure
           file.try &.close
         end

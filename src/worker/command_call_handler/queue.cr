@@ -34,12 +34,12 @@ class Worker
       end
 
       private def execution_loop
-        Log.debug { "Execution loop started" }
+        Log.debug { "execution loop started" }
         while command_call = @queue.shift?
           @worker.command_call_executor.execute(command_call)
           sleep @timeout
         end
-        Log.debug { "Execution loop finished" }
+        Log.debug { "execution loop finished" }
       end
     end
   end

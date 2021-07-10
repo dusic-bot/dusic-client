@@ -12,7 +12,7 @@ class Worker
     end
 
     def handle(command_calls : Array(CommandCall)) : Nil
-      Log.debug { "Handling #{command_calls.size} command calls: #{command_calls.join("; ")}" }
+      Log.debug { "handling #{command_calls.size} command calls: #{command_calls.join("; ")}" }
 
       command_calls.each do |command_call|
         @queues[command_call.server_id].push(command_call)
