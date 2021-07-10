@@ -214,7 +214,12 @@ class Worker
           @preserved_playback = nil
         end
       end
-      voice_client.try &.stop
+
+      if voice_client_local = voice_client
+        voice_client_local.stop
+      else
+        Log.warn { "couldn't correctly stop audio play since voice client is missing" }
+      end
     end
 
     private def play_async(channel_id : UInt64) : Nil
