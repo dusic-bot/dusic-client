@@ -253,6 +253,13 @@ class Worker
           Discord::GamePlaying::Type::Listening
         )
       )
+
+      # NOTE: Temporary logging GC stats to find leakage
+      Log.info { "Garbage collector stats: #{GC.stats}" }
+      Log.info { "Garbage collector prof_stats: #{GC.prof_stats}" }
+      fibers_count = 0
+      Fiber.unsafe_each { fibers_count += 1 }
+      Log.info { "Fibers count: #{fibers_count}" }
     rescue exception
       Log.error { "failed to update Discord status: #{exception.message}" }
     end
