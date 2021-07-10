@@ -12,7 +12,7 @@ class Worker
     INTENTS = Discord::Gateway::Intents::Guilds | Discord::Gateway::Intents::GuildVoiceStates |
               Discord::Gateway::Intents::GuildMessages | Discord::Gateway::Intents::DirectMessages
     STATUS_UPDATE_INTERVAL   = 15.minutes
-    VOICE_RECONNECTION_AWAIT = 2.seconds
+    VOICE_RECONNECTION_AWAIT = 1.second
 
     @is_running : Bool = false
 
