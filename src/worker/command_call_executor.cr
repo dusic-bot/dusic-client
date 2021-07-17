@@ -129,7 +129,7 @@ class Worker
       begin
         COMMANDS_LIST.each do |data|
           if data[:aliases].includes?(command_call.name)
-            Log.info { "Executing #{command_call}" }
+            Log.info { "executing #{command_call}" }
 
             if command_call.server_id.zero? && !data[:allowed_in_dm]
               return UnavailableInDmCommand.new(@worker, command_call, data).execute
@@ -143,7 +143,7 @@ class Worker
           end
         end
       rescue exception
-        Log.error(exception: exception) { "Unhandled exception during execution of #{command_call}" }
+        Log.error(exception: exception) { "unhandled exception during execution of #{command_call}" }
 
         return ErrorCommand.new(@worker, command_call).execute
       end

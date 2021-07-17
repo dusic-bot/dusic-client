@@ -28,7 +28,7 @@ class Worker
     end
 
     def to_s(io : IO) : Nil
-      io << "`" << name << "`" << arguments << options
+      io << "`" << name << "`" << arguments << options << " at " << server_id << " by " << author_id
     end
   end
 end

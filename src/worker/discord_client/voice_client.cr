@@ -29,7 +29,7 @@ class Worker
         @current_frame = 0_u64
         @stop_flag = false
 
-        Log.debug { "playing #{audio} (skip: #{skip_frames}) at server##{@server_id}" }
+        Log.info { "playing #{audio} (skip: #{skip_frames}) at server##{@server_id}" }
 
         unless audio.ready?
           Log.warn { "attempted to play #{audio} with status #{audio.status} at server##{@server_id}" }
@@ -45,7 +45,7 @@ class Worker
       end
 
       def stop : Nil
-        Log.debug { "stopping playback at server##{@server_id}" }
+        Log.info { "stopping playback at server##{@server_id}" }
         @stop_flag = true
       end
 
@@ -85,9 +85,9 @@ class Worker
 
         total_play_time = Time.utc - start_time
 
-        Log.debug do
+        Log.info do
           <<-TEXT
-          Finished playing.
+          playback finished:
           Frames count: #{@current_frame}.
           Send time: #{total_send_time}.
           Average time per frame-send: #{total_send_time / @current_frame}.

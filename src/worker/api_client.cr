@@ -131,7 +131,7 @@ class Worker
     end
 
     private def handle_new_donation(donation : Mapping::Donation) : Nil
-      Log.info { "New donation registered" }
+      Log.info { "new donation registered" }
       server_id = donation.server_id
       return if server_id.nil?
 
