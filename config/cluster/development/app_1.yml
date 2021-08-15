@@ -1,0 +1,6 @@
+workers:
+  -
+    env: "development"
+    shard_id: 0
+    shard_num: 1
+    log: "development_0_1"

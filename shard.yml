@@ -8,8 +8,7 @@ development_dependencies:
 
 dependencies:
   i18n:
-    github: fizvlad/i18n.cr
-    branch: feat/crystal-v1-support
+    github: crimson-knight/i18n.cr
   discordcr:
     github: shardlab/discordcr
 

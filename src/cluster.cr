@@ -5,10 +5,12 @@ require "./cluster/*"
 
 class Cluster
   WORKER_START_INTERVAL = 2.seconds
+  WORKER_CHECK_INTERVAL = 5.seconds
 
   Log = ::Log.for("cluster")
 
   @workers : Array(WorkerData) = [] of WorkerData
+  @stop_flag : Bool = false
 
   def initialize(config_path : String)
     load_configuration(config_path)
@@ -17,9 +19,20 @@ class Cluster
   def run : Nil
     Log.info { "starting cluster" }
 
+    @stop_flag = false
+
     @workers.each do |worker_data|
       start_worker(worker_data)
       sleep WORKER_START_INTERVAL
+    end
+
+    until @stop_flag
+      @workers.each do |worker_data|
+        assert_running_worker(worker_data)
+        sleep WORKER_START_INTERVAL
+      end
+
+      sleep WORKER_CHECK_INTERVAL
     end
 
     @workers.each do |worker_data|
@@ -29,6 +42,8 @@ class Cluster
 
   def stop : Nil
     Log.info { "stopping cluster" }
+
+    @stop_flag = true
 
     @workers.each do |worker_data|
       stop_worker(worker_data)
@@ -64,7 +79,13 @@ class Cluster
     )
     worker_data.process = process
 
-    Log.info { "started worker with PID #{worker_data.pid}" }
+    Log.info { "started worker with PID #{worker_data.pid} for shard #{worker_data.shard_id} of #{worker_data.env}" }
+  end
+
+  private def assert_running_worker(worker_data : WorkerData) : Nil
+    unless worker_data.process.try &.exists?
+      start_worker(worker_data)
+    end
   end
 
   private def await_worker(worker_data : WorkerData) : Nil
