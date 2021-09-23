@@ -350,9 +350,5 @@ class Worker
     private def premium? : Bool
       server.premium?
     end
-
-    private def voice_client : DiscordClient::VoiceClient?
-      @worker.discord_client.voice_client(@server_id)
-    end
   end
 end
