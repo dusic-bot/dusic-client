@@ -231,7 +231,7 @@ class Worker
 
         # NOTE: Need to ensure that client with closed WVS is stopped and deleted from memory
         sleep VOICE_RECONNECTION_AWAIT
-        if discord_voice_client == @voice_clients[server_id]?.try &.client
+        if @voice_clients[server_id]?.try &.client
           voice_client = @voice_clients.delete(server_id)
           voice_client.try &.stop
         end
