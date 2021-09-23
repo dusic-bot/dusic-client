@@ -14,7 +14,7 @@ class Worker
       getter client : Discord::VoiceClient
 
       # NOTE: Discord voice client must be running and ready
-      def initialize(@worker : Worker, @server_id : UInt64, @client : Discord::VoiceClient)
+      def initialize(@server_id : UInt64, @client : Discord::VoiceClient)
         @current_frame = 0_u64
       end
 
