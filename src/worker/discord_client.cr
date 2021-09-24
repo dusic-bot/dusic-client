@@ -220,7 +220,7 @@ class Worker
         if current_voice_client = @voice_clients[server_id]?
           current_voice_client.voice_server_update(payload.endpoint, payload.token, discord_session.session_id)
         else
-          @voice_clients[server_id] = VoiceClient.new(server_id, @bot_id, payload.endpoint, payload.token, discord_session.session_id)
+          @voice_clients[server_id] = AsyncVoiceClient.new(server_id, @bot_id, payload.endpoint, payload.token, discord_session.session_id)
         end
 
         @voice_clients[server_id].on_close do
