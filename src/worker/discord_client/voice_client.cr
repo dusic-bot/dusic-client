@@ -4,25 +4,60 @@ class Worker
   class DiscordClient
     # Discord voice client facade
     class VoiceClient
-      IDEAL_INTERVAL = 20.milliseconds
+      CONNECTION_TIMEOUT        = 4.seconds
+      CONNECTION_CHECK_INTERVAL = 200.milliseconds
+      IDEAL_INTERVAL            = 20.milliseconds
 
       Log = Worker::Log.for("discord_voice_client")
 
-      @stop_flag : Bool = false
-
-      getter current_frame : UInt64
-      getter client : Discord::VoiceClient
-
-      # NOTE: Discord voice client must be running and ready
-      def initialize(@server_id : UInt64, @client : Discord::VoiceClient)
-        @current_frame = 0_u64
+      enum ClientState
+        Open
+        Ready
+        Closed
       end
 
-      def client=(client : Discord::VoiceClient) : Discord::VoiceClient
-        @client = client
-        send_speaking
+      @stop_flag : Bool = false
+      @client_state : ClientState
+      @client : Discord::VoiceClient
+      @on_close : (->)? = nil
 
-        @client
+      getter current_frame : UInt64
+
+      def initialize(@server_id : UInt64, @bot_id : UInt64, endpoint : String, token : String, session_id : String)
+        Log.debug { "creating new voice client for server##{@server_id}" }
+        @current_frame = 0_u64
+        @client_state = ClientState::Open
+        @client = Discord::VoiceClient.new(endpoint, token, session_id, @server_id, @bot_id)
+        @client.on_ready do
+          @client_state = ClientState::Ready
+        end
+        spawn do
+          @client.run
+          @client_state = ClientState::Closed
+          Log.debug { "voice connection closed at server##{@server_id}" }
+          @on_close.try &.call
+        end
+        Dusic.await(CONNECTION_TIMEOUT, CONNECTION_CHECK_INTERVAL) { @client_state == ClientState::Ready }
+      end
+
+      def voice_server_update(endpoint : String, token : String, session_id : String) : Nil
+        Log.debug { "updating voice client for server##{@server_id}" }
+        new_client = Discord::VoiceClient.new(endpoint, token, session_id, @server_id, @bot_id)
+        new_client_state = ClientState::Open
+        new_client.on_ready do
+          @client = new_client
+          @client_state = ClientState::Ready
+          send_speaking
+        end
+        spawn do
+          new_client.run
+          @client_state = ClientState::Closed
+          Log.debug { "updated voice connection closed at server##{@server_id}" }
+          @on_close.try &.call
+        end
+      end
+
+      def on_close(&@on_close : ->)
       end
 
       def play(audio : AudioPlayer::Audio, skip_frames : UInt64 = 0_u64) : Nil
