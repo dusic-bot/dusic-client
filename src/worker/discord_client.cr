@@ -172,7 +172,6 @@ class Worker
       Dusic.spawn do
         while @is_running
           update_status
-          perform_gc_operations
           sleep STATUS_UPDATE_INTERVAL
         end
       end
@@ -252,21 +251,6 @@ class Worker
       )
     rescue exception
       Log.error { "failed to update Discord status: #{exception.message}" }
-    end
-
-    private def perform_gc_operations : Nil
-      # NOTE: Attempt to fight memory leakage
-      fibers_count = 0
-      Fiber.unsafe_each { fibers_count += 1 }
-      Log.info { "Fibers count: #{fibers_count}" }
-      Log.info { "Garbage collector stats: #{GC.stats}" }
-      Log.info { "Garbage collector prof_stats: #{GC.prof_stats}" }
-      Log.info { "Manually running GC" }
-      GC.collect
-      Log.info { "Garbage collector stats: #{GC.stats}" }
-      Log.info { "Garbage collector prof_stats: #{GC.prof_stats}" }
-    rescue exception
-      Log.error { "error during gc run: #{exception.message}" }
     end
   end
 end

@@ -42,6 +42,15 @@ worker = Worker.new(shard_id, shard_num)
 Signal::INT.trap { |sig| worker.stop }
 Signal::STOP.trap { |sig| worker.stop }
 
+# Regular GC runs (Attempt to fight memory leakage)
+Dusic.spawn do
+  sleep 5.minutes
+  loop do
+    Dusic.run_gc
+    sleep 15.minutes
+  end
+end
+
 # Start worker
 worker.run
 
