@@ -19,6 +19,21 @@ module Dusic::Misc
     ::spawn(name: name, same_thread: same_thread, &block)
   end
 
+  # Manually run GC and log some of it stats
+  def run_gc
+    fibers_count = 0
+    Fiber.unsafe_each { fibers_count += 1 }
+    Log.info { "Fibers count: #{fibers_count}" }
+    Log.info { "Garbage collector stats: #{GC.stats}" }
+    Log.info { "Garbage collector prof_stats: #{GC.prof_stats}" }
+    Log.info { "Manually running GC" }
+    GC.collect
+    Log.info { "Garbage collector stats: #{GC.stats}" }
+    Log.info { "Garbage collector prof_stats: #{GC.prof_stats}" }
+  rescue exception
+    Log.error { "error during gc run: #{exception.message}" }
+  end
+
   # Format time span in format of HH:MM:SS
   def format_seconds(ts : Time::Span) : String
     is_negative = ts < 0.seconds
