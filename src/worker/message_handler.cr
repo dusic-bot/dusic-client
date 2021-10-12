@@ -89,6 +89,7 @@ class Worker
       [
         {string: "<@#{@bot_id}>", allow_whitespace: true},
         {string: "<@!#{@bot_id}>", allow_whitespace: true},
+        {string: "<@&#{@bot_id}>", allow_whitespace: true},
       ]
     end
   end
