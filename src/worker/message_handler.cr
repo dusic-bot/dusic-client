@@ -3,7 +3,12 @@ class Worker
   class MessageHandler
     alias Prefix = NamedTuple(string: String, allow_whitespace: Bool)
 
-    DM_PREFIX             = {string: "", allow_whitespace: true}
+    DM_PREFIX        = {string: "", allow_whitespace: true}
+    MENTION_PREFIXES = [
+      {string: "<@#{Dusic.secrets["bot_id"].as_s}>", allow_whitespace: true},
+      {string: "<@!#{Dusic.secrets["bot_id"].as_s}>", allow_whitespace: true},
+    ]
+
     DOWNCASE_COMMAND_NAME = true
     COMMAND_NAME_REGEX    = /[a-zа-я]+/
     OPTION_PREFIX         = "--"
@@ -67,11 +72,17 @@ class Worker
     end
 
     private def prefixes(server_id : UInt64) : Array(Prefix)
-      result : Array(Prefix) = [server_prefix(server_id)]
-      result.concat(mention_prefixes)
+      result : Array(Prefix) = server_prefixes(server_id)
+      result.concat(MENTION_PREFIXES)
       result << DM_PREFIX if server_id.zero?
 
       result
+    end
+
+    private def server_prefixes(server_id : UInt64) : Array(Prefix)
+      [
+        server_prefix(server_id),
+      ]
     end
 
     private def server_prefix(server_id : UInt64) : Prefix
@@ -83,14 +94,6 @@ class Worker
       end
 
       {string: server_prefix || @default_prefix, allow_whitespace: false}
-    end
-
-    private def mention_prefixes : Array(Prefix)
-      [
-        {string: "<@#{@bot_id}>", allow_whitespace: true},
-        {string: "<@!#{@bot_id}>", allow_whitespace: true},
-        {string: "<@&#{@bot_id}>", allow_whitespace: true},
-      ]
     end
   end
 end
