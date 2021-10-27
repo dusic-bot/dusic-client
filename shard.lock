@@ -2,13 +2,13 @@ version: 2.0
 shards:
   discordcr:
     git: https://github.com/shardlab/discordcr.git
-    version: 0.4.0+git.commit.c0adeeacd5ac9e1faba29cc65f4bb1435e4b9865
+    version: 0.4.1
 
   i18n:
     git: https://github.com/crimson-knight/i18n.cr.git
-    version: 0.4.0
+    version: 0.4.1
 
   spectator:
     git: https://gitlab.com/arctic-fox/spectator.git
-    version: 0.9.36
+    version: 0.9.40
 
