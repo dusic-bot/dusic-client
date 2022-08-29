@@ -125,9 +125,35 @@ class Worker
         publish_stats
       when "restart"
         # TODO: Restart shard
+      when "command_call"
+        handle_command_call(message["payload"].as_h)
       when "stop"
         Process.signal(Signal::INT, Process.pid)
       end
+    end
+
+    private def handle_command_call(payload : Hash(String, JSON::Any)) : Nil
+      name = payload["name"].as_s
+      arguments = payload["arguments"].as_a.map &.as_s
+      options = payload["options"].as_h.keys.to_h { |k| {k, nil.as(String?)} }
+
+      server_id = payload["server_id"].as_s.try &.to_u64
+      channel_id = payload["channel_id"].as_s.try &.to_u64
+      author_id = payload["author_id"].as_s.try &.to_u64
+      author_roles_ids : Array(UInt64) = payload["author_roles_ids"].as_a.map &.as_s.to_u64
+
+      voice_channel_id : UInt64? = @worker.discord_client.user_voice_channel_id(server_id, author_id)
+
+      context = {
+        author_id:        author_id,
+        author_roles_ids: author_roles_ids,
+        server_id:        server_id || 0_u64,
+        channel_id:       channel_id,
+        voice_channel_id: voice_channel_id,
+      }
+
+      command_call = CommandCall.new(name, arguments, options, context)
+      @worker.command_call_handler.handle([command_call])
     end
 
     private def handle_new_donation(donation : Mapping::Donation) : Nil

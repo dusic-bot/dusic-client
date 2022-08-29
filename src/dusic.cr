@@ -28,7 +28,7 @@ require "./dusic/*"
 
 # Dusic module itself
 module Dusic
-  VERSION = "6.0.3"
+  VERSION = "6.1.0"
 
   extend self
   include Dusic::Env
