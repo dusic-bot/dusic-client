@@ -10,7 +10,8 @@ dependencies:
   i18n:
     github: crimson-knight/i18n.cr
   discordcr:
-    github: shardlab/discordcr
+    github: fizvlad/discordcr
+    branch: fix/upd-discovery
 
 authors:
   - Vladislav Kuznecov <fizvlad@mail.ru>

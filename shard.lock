@@ -1,8 +1,8 @@
 version: 2.0
 shards:
   discordcr:
-    git: https://github.com/shardlab/discordcr.git
-    version: 0.4.1
+    git: https://github.com/fizvlad/discordcr.git
+    version: 0.4.0+git.commit.350a86ad7906f0307ef41de8d0835ac136877186
 
   i18n:
     git: https://github.com/crimson-knight/i18n.cr.git
