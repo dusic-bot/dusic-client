@@ -42,7 +42,8 @@ class Worker
         return
       end
 
-      audio.load { @worker.api_client.audio(audio.manager, audio.id, format: "dca") }
+      # NOTE: always VK
+      audio.load { @worker.hudba_client.audio_file(audio.id, "dca") }
     end
 
     private def await_loading_audio(audio : AudioPlayer::Audio) : Nil
