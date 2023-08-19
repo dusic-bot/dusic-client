@@ -155,8 +155,10 @@ class Worker
           object.audios.each do |el|
             audios << AudioPlayer::RemoteAudio.new("vk", el.id, el.artist, el.title, el.duration)
           end
-        elsif object.is_a?(Array(HudbaClient::Mapping::Audio)) && object.size == 1
-          title = "#{object.first.artist} - #{object.first.title}"
+        elsif object.is_a?(Array(HudbaClient::Mapping::Audio))
+          if object.size == 1
+            title = "#{object.first.artist} - #{object.first.title}"
+          end
           object.each do |el|
             audios << AudioPlayer::RemoteAudio.new("vk", el.id, el.artist, el.title, el.duration)
           end
