@@ -1,7 +1,7 @@
 require "json"
 
 class Worker
-  class ApiClient
+  class HudbaClient
     module Converter
       module SecondsToTimeSpan
         def self.from_json(parser : JSON::PullParser)

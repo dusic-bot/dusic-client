@@ -14,17 +14,18 @@ class Worker
         "Authorization" => "Bearer #{Dusic.secrets["hudba"]["token"].as_s}",
         "Origin"        => "app://dusic-client",
         "Content-Type"  => "application/json",
+        "Accept"  => "application/json",
       }
 
       def initialize
       end
 
-      def get(subpath : String, body : String? = nil) : String
-        get_raw(subpath, body).body
+      def get(subpath : String, body : String? = nil)
+        get_raw(subpath, body)
       end
 
-      def post(subpath : String, body : String? = nil) : String
-        post_raw(subpath, body).body
+      def post(subpath : String, body : String? = nil)
+        post_raw(subpath, body)
       end
 
       def get_raw(subpath : String, body : String? = nil) : HTTP::Client::Response
@@ -44,7 +45,7 @@ class Worker
       end
 
       def post_raw(subpath : String, body : String? = nil) : HTTP::Client::Response
-        Log.debug { "PUT #{subpath}: #{body}" }
+        Log.debug { "POST #{subpath}: #{body}" }
         with_client do |client|
           client.post("/api/#{subpath}", headers: @headers, body: body)
         end

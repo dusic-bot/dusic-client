@@ -1,7 +1,7 @@
 require "json"
 
 class Worker
-  class ApiClient
+  class HudbaClient
     module Mapping
       class Playlist
         include JSON::Serializable

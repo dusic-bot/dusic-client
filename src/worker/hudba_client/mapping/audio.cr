@@ -1,7 +1,7 @@
 require "json"
 
 class Worker
-  class ApiClient
+  class HudbaClient
     module Mapping
       class Audio
         include JSON::Serializable
@@ -9,7 +9,7 @@ class Worker
         getter id : String
         getter artist : String
         getter title : String
-        @[JSON::Field(converter: Worker::ApiClient::Converter::SecondsToTimeSpan)]
+        @[JSON::Field(converter: Worker::HudbaClient::Converter::SecondsToTimeSpan)]
         getter duration : Time::Span
         getter cover_url : String?
         getter is_claimed : Bool

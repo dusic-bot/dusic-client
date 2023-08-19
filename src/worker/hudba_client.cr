@@ -21,7 +21,7 @@ class Worker
       @is_running = false
     end
 
-    def audios_request(query : String) : Mapping::AudioRequest
+    def audios_request(query : String) : Mapping::AudioRequest?
       # TODO: Caching?
       get_audios(query)
     end
@@ -31,10 +31,13 @@ class Worker
       get_audio(id, format)
     end
 
-    private def get_audios(query : String) : Mapping::AudioRequest
-      params = Mapping::AudioRequestParams.new(argument: query)
-      response = @http_client.post("vk/audios/request", body: params.to_json)
-      Mapping::AudioRequest.from_json(response)
+    private def get_audios(query : String) : Mapping::AudioRequest?
+      response = @http_client.post("vk/audios/request", body: { argument: query }.to_json)
+      if response.success?
+        Mapping::AudioRequest.from_json(response.body)
+      else
+        nil
+      end
     end
 
     private def get_audio(id : String, format : String) : File?
