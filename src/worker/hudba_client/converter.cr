@@ -1,7 +1,7 @@
 require "./converter/*"
 
 class Worker
-  class ApiClient
+  class HudbaClient
     module Converter
     end
   end

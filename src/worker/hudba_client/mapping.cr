@@ -1,7 +1,7 @@
 require "./mapping/*"
 
 class Worker
-  class ApiClient
+  class HudbaClient
     module Mapping
     end
   end
