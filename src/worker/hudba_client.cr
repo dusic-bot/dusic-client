@@ -32,7 +32,7 @@ class Worker
     end
 
     private def get_audios(query : String) : Mapping::AudioRequest?
-      response = @http_client.post("vk/audios/request", body: { argument: query }.to_json)
+      response = @http_client.post("vk/audios/request", body: {argument: query}.to_json)
       if response.success?
         Mapping::AudioRequest.from_json(response.body)
       else

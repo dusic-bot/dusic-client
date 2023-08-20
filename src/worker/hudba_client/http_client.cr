@@ -14,7 +14,7 @@ class Worker
         "Authorization" => "Bearer #{Dusic.secrets["hudba"]["token"].as_s}",
         "Origin"        => "app://dusic-client",
         "Content-Type"  => "application/json",
-        "Accept"  => "application/json",
+        "Accept"        => "application/json",
       }
 
       def initialize
