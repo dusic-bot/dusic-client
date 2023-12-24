@@ -8,6 +8,7 @@ class Worker
 
   SUBSYSTEMS = [
     "api_client",
+    "hudba_client",
     "discord_client",
     "message_handler",
     "command_call_handler",

@@ -143,32 +143,40 @@ class Worker
 
       private def fetch_vk_audios : Tuple(Array(AudioPlayer::Audio)?, String?)
         argument = @command_call.arguments.join(" ")
-        audio_request = @worker.api_client.vk_audios(argument)
+        audio_request = @worker.hudba_client.audios_request(argument)
+        return {[] of AudioPlayer::Audio, nil} if audio_request.nil?
 
         title : String? = nil
-        if audio_request.response.size == 1 && audio_request.response.first.is_a?(ApiClient::Mapping::AudioList)
-          title = audio_request.response.first.title
-        end
-
         audios = [] of AudioPlayer::Audio
-        audio_request.response.map do |el|
-          el.is_a?(ApiClient::Mapping::Audio) ? el : el.audios
-        end.flatten.each do |el|
-          manager = el.manager
-          id = el.id
-          if manager && id
-            audios << AudioPlayer::RemoteAudio.new(manager, id, el.artist, el.title, el.duration)
-          end
+
+        object = audio_request.object
+        if object.is_a?(HudbaClient::Mapping::Playlist)
+          title = "#{object.title} - #{object.subtitle}"
+          audios = handle_hudba_audios(object.audios)
+        elsif object.is_a?(Array(HudbaClient::Mapping::Audio))
+          title = "#{object.first.artist} - #{object.first.title}" if object.size == 1
+          audios = handle_hudba_audios(object)
+        elsif object.is_a?(HudbaClient::Mapping::Audio)
+          title = "#{object.artist} - #{object.title}"
+          audios = handle_hudba_audios([object])
         end
 
-        if audio_request.type == "find" && @command_call.options.has_key?("instant")
+        if audio_request.type == "search_audios" && @command_call.options.has_key?("instant")
           {audios[0, 1], title}
-        elsif audio_request.type == "find"
+        elsif audio_request.type == "search_audios"
           init_vk_selection(audios)
           {nil, title}
         else
           {audios, title}
         end
+      end
+
+      private def handle_hudba_audios(audios : Array(HudbaClient::Mapping::Audio)) : Array(AudioPlayer::Audio)
+        result = [] of AudioPlayer::Audio
+        audios.each do |el|
+          result << AudioPlayer::RemoteAudio.new("vk", el.id, el.artist, el.title, el.duration) unless el.is_claimed
+        end
+        result
       end
 
       private def init_vk_selection(audios : Array(AudioPlayer::Audio)) : Nil
